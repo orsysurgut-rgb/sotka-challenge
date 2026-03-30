@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Челлендж Сотка</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Manrope:wght@400;500;600;700&display=swap');
+
+  :root {
+    --green: #c8f035;
+    --green-dark: #a3d400;
+    --black: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface2: #242424;
+    --border: #2e2e2e;
+    --text: #f0f0f0;
+    --muted: #888;
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    height: 100%;
+    background: var(--black);
+    color: var(--text);
+    font-family: 'Manrope', sans-serif;
+    overscroll-behavior: none;
+  }
+
+  .app {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* SCREENS */
+  .screen { display: none; flex-direction: column; flex: 1; }
+  .screen.active { display: flex; }
+
+  /* ====== HOME SCREEN ====== */
+  .home-header {
+    background: var(--green);
+    padding: 28px 20px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .home-header::after {
+    content: '100';
+    position: absolute;
+    right: -10px;
+    top: -10px;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 100px;
+    font-weight: 900;
+    color: rgba(0,0,0,0.08);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .home-tag {
+    display: inline-block;
+    background: rgba(0,0,0,0.12);
+    color: rgba(0,0,0,0.6);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+
+  .home-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--black);
+    line-height: 1.1;
+    letter-spacing: -1px;
+  }
+
+  .home-sub {
+    font-size: 13px;
+    color: rgba(0,0,0,0.5);
+    margin-top: 6px;
+    font-weight: 500;
+  }
+
+  /* Stats row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    padding: 14px 16px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    padding: 12px 10px;
+    text-align: center;
+    border: 0.5px solid var(--border);
+  }
+
+  .stat-num {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--green);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* Progress ring */
+  .progress-section {
+    padding: 4px 16px 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--surface);
+    margin: 0 16px;
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border);
+  }
+
+  .ring-wrap {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    margin-top: 16px;
+  }
+
+  .ring-wrap svg { transform: rotate(-90deg); }
+
+  .ring-bg { fill: none; stroke: var(--border); stroke-width: 6; }
+  .ring-fill { fill: none; stroke: var(--green); stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
+
+  .ring-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .ring-pct {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--green);
+    line-height: 1;
+  }
+
+  .ring-days {
+    font-size: 9px;
+    color: var(--muted);
+    margin-top: 2px;
+    font-weight: 600;
+  }
+
+  .progress-info { flex: 1; margin-top: 16px; }
+
+  .progress-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .progress-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* Today section */
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 16px 16px 8px;
+  }
+
+  .today-card {
+    margin: 0 16px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border);
+    overflow: hidden;
+  }
+
+  .today-ex {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    border-bottom: 0.5px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .today-ex:last-child { border-bottom: none; }
+  .today-ex:active { background: var(--surface2); }
+
+  .ex-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .ex-icon.done { background: rgba(200, 240, 53, 0.15); }
+  .ex-icon.pending { background: var(--surface2); }
+
+  .ex-info { flex: 1; }
+
+  .ex-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ex-name.done { color: var(--green); }
+
+  .ex-count {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .ex-check {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .ex-check.done {
+    background: var(--green);
+    border-color: var(--green);
+  }
+
+  .ex-check svg { display: none; }
+  .ex-check.done svg { display: block; }
+
+  /* CTA Button */
+  .cta-btn {
+    margin: 14px 16px;
+    background: var(--green);
+    color: var(--black);
+    border: none;
+    border-radius: var(--radius);
+    padding: 16px;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    width: calc(100% - 32px);
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    letter-spacing: -0.3px;
+  }
+
+  .cta-btn:active { opacity: 0.85; transform: scale(0.98); }
+
+  /* ====== CALENDAR SCREEN ====== */
+  .screen-header {
+    padding: 20px 16px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .back-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .screen-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    padding: 8px 16px 16px;
+  }
+
+  .cal-day {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    border: 0.5px solid var(--border);
+    position: relative;
+    cursor: pointer;
+  }
+
+  .cal-day.done { background: var(--green); color: var(--black); border-color: var(--green); }
+  .cal-day.today { border-color: var(--green); color: var(--green); }
+  .cal-day.future { background: var(--surface); color: var(--muted); }
+  .cal-day.rest { background: transparent; color: #333; border-color: #222; }
+  .cal-day.empty { background: transparent; border: none; }
+
+  .cal-week-labels {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    padding: 0 16px 4px;
+  }
+
+  .cal-wl {
+    text-align: center;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #444;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 14px;
+    padding: 0 16px 16px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+  }
+
+  /* Exercise breakdown in calendar */
+  .ex-breakdown {
+    margin: 0 16px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border);
+    overflow: hidden;
+  }
+
+  .ex-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  .ex-row:last-child { border-bottom: none; }
+
+  .ex-row-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ex-row-count {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--green);
+  }
+
+  .ex-row-max {
+    font-size: 11px;
+    color: var(--muted);
+    margin-left: 3px;
+    font-weight: 500;
+  }
+
+  /* ====== LOG SCREEN ====== */
+  .log-exercise-list {
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .log-ex-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border);
+    padding: 16px;
+  }
+
+  .log-ex-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .log-ex-emoji {
+    font-size: 24px;
+    width: 44px;
+    height: 44px;
+    background: var(--surface2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .log-ex-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .log-ex-target {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* Counter */
+  .counter-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .counter-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--surface2);
+    border: 0.5px solid var(--border);
+    color: var(--text);
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.1s;
+    flex-shrink: 0;
+  }
+
+  .counter-btn:active { background: #333; }
+
+  .counter-bar-wrap {
+    flex: 1;
+    height: 8px;
+    background: var(--surface2);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .counter-bar {
+    height: 100%;
+    background: var(--green);
+    border-radius: 4px;
+    transition: width 0.2s ease;
+  }
+
+  .counter-bar.full { background: var(--green); }
+
+  .counter-num {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--green);
+    min-width: 44px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .save-all-btn {
+    margin: 16px 16px 8px;
+    background: var(--green);
+    color: var(--black);
+    border: none;
+    border-radius: var(--radius);
+    padding: 15px;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    width: calc(100% - 32px);
+    cursor: pointer;
+    transition: opacity 0.15s;
+    letter-spacing: -0.3px;
+  }
+
+  .save-all-btn:active { opacity: 0.85; }
+  .save-all-btn:disabled { opacity: 0.3; cursor: default; }
+
+  /* ====== SETTINGS SCREEN ====== */
+  .settings-section {
+    margin: 0 16px 16px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 0.5px solid var(--border);
+    overflow: hidden;
+  }
+
+  .settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  .settings-row:last-child { border-bottom: none; }
+
+  .settings-row-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .settings-row-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .challenge-type-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 12px 16px 16px;
+  }
+
+  .challenge-type-btn {
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+  }
+
+  .challenge-type-btn.selected {
+    border-color: var(--green);
+    background: rgba(200, 240, 53, 0.08);
+  }
+
+  .ct-num {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--green);
+    line-height: 1;
+  }
+
+  .ct-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .target-info {
+    font-size: 12px;
+    color: var(--muted);
+    padding: 0 16px 16px;
+    line-height: 1.5;
+  }
+
+  .target-info em {
+    color: var(--green);
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  /* Exercise selector */
+  .ex-selector {
+    padding: 0 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .ex-sel-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .ex-sel-item.selected {
+    border-color: var(--green);
+    background: rgba(200, 240, 53, 0.07);
+  }
+
+  .ex-sel-emoji { font-size: 20px; }
+
+  .ex-sel-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ex-sel-check {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .ex-sel-item.selected .ex-sel-check {
+    background: var(--green);
+    border-color: var(--green);
+  }
+
+  .start-btn {
+    margin: 0 16px 20px;
+    background: var(--green);
+    color: var(--black);
+    border: none;
+    border-radius: var(--radius);
+    padding: 16px;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    width: calc(100% - 32px);
+    cursor: pointer;
+    transition: opacity 0.15s;
+    letter-spacing: -0.3px;
+  }
+
+  .start-btn:active { opacity: 0.85; }
+
+  /* ====== BOTTOM NAV ====== */
+  .bottom-nav {
+    position: sticky;
+    bottom: 0;
+    background: rgba(15,15,15,0.95);
+    border-top: 0.5px solid var(--border);
+    display: flex;
+    padding: 8px 0 env(safe-area-inset-bottom, 8px);
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 0;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    border: none;
+    background: none;
+  }
+
+  .nav-item:active { opacity: 0.6; }
+
+  .nav-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nav-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .nav-item.active .nav-label { color: var(--green); }
+  .nav-item.active svg path, .nav-item.active svg circle, .nav-item.active svg rect { stroke: var(--green); }
+
+  /* Scrollable content */
+  .scroll-content {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 12px;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--green);
+    color: var(--black);
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+    z-index: 999;
+    white-space: nowrap;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .scroll-content::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HOME -->
+  <div class="screen active" id="screen-home">
+    <div class="scroll-content">
+      <div class="home-header">
+        <div class="home-tag">30 дней · старт 1 апреля</div>
+        <div class="home-title">ЧЕЛЛЕНДЖ<br>СОТКА</div>
+        <div class="home-sub">100 повторений в день меняют всё</div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-num" id="stat-days">0</div>
+          <div class="stat-label">дней</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="stat-total">0</div>
+          <div class="stat-label">всего</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="stat-streak">0</div>
+          <div class="stat-label">серия</div>
+        </div>
+      </div>
+
+      <div class="progress-section">
+        <div class="ring-wrap">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <circle class="ring-bg" cx="40" cy="40" r="34"/>
+            <circle class="ring-fill" id="ring-fill" cx="40" cy="40" r="34"
+              stroke-dasharray="213.6"
+              stroke-dashoffset="213.6"/>
+          </svg>
+          <div class="ring-center">
+            <div class="ring-pct" id="ring-pct">0%</div>
+            <div class="ring-days" id="ring-days">0/30</div>
+          </div>
+        </div>
+        <div class="progress-info">
+          <div class="progress-title" id="progress-title">Начни сегодня!</div>
+          <div class="progress-desc" id="progress-desc">На третий день тебя уже не остановить. Главное начать.</div>
+        </div>
+      </div>
+
+      <div class="section-label">Сегодня</div>
+      <div class="today-card" id="today-card"></div>
+
+      <button class="cta-btn" id="log-btn" onclick="goTo('log')">Отметить тренировку</button>
+    </div>
+  </div>
+
+  <!-- CALENDAR -->
+  <div class="screen" id="screen-calendar">
+    <div class="scroll-content">
+      <div class="screen-header">
+        <div class="screen-title">Прогресс</div>
+      </div>
+
+      <div class="cal-week-labels">
+        <div class="cal-wl">пн</div>
+        <div class="cal-wl">вт</div>
+        <div class="cal-wl">ср</div>
+        <div class="cal-wl">чт</div>
+        <div class="cal-wl">пт</div>
+        <div class="cal-wl">сб</div>
+        <div class="cal-wl">вс</div>
+      </div>
+      <div class="calendar-grid" id="calendar-grid"></div>
+
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> Выполнено</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--surface);border:0.5px solid var(--green)"></div> Сегодня</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--surface);border:0.5px solid var(--border)"></div> Впереди</div>
+        <div class="legend-item"><div class="legend-dot" style="background:transparent;border:0.5px solid #222"></div> Отдых</div>
+      </div>
+
+      <div class="section-label">Упражнения</div>
+      <div class="ex-breakdown" id="ex-breakdown"></div>
+    </div>
+  </div>
+
+  <!-- LOG -->
+  <div class="screen" id="screen-log">
+    <div class="scroll-content">
+      <div class="screen-header">
+        <div class="screen-title">Тренировка</div>
+      </div>
+      <div class="log-exercise-list" id="log-exercise-list"></div>
+      <button class="save-all-btn" id="save-all-btn" onclick="saveLog()">Сохранить тренировку</button>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="screen" id="screen-settings">
+    <div class="scroll-content">
+      <div class="screen-header">
+        <div class="screen-title">Настройки</div>
+      </div>
+
+      <div class="section-label">Тип челленджа</div>
+      <div class="challenge-type-grid">
+        <div class="challenge-type-btn selected" id="ct-sotka" onclick="setChallengeType('sotka')">
+          <div class="ct-num">100</div>
+          <div class="ct-label">повторений<br>в день</div>
+        </div>
+        <div class="challenge-type-btn" id="ct-tysyacha" onclick="setChallengeType('tysyacha')">
+          <div class="ct-num">1000</div>
+          <div class="ct-label">повторений<br>за месяц</div>
+        </div>
+      </div>
+      <div class="target-info" id="target-info">
+        Сотка: <em>100 повторений в день</em>, 5 дней в неделю, 30 дней.
+      </div>
+
+      <div class="section-label">Упражнения</div>
+      <div class="ex-selector" id="ex-selector"></div>
+
+      <button class="start-btn" onclick="saveSettings()">Сохранить и начать</button>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <button class="nav-item active" id="nav-home" onclick="goTo('home')">
+      <div class="nav-icon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <path d="M3 9.5L11 3l8 6.5V19a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8 20v-8h6v8" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="nav-label">Главная</div>
+    </button>
+    <button class="nav-item" id="nav-calendar" onclick="goTo('calendar')">
+      <div class="nav-icon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <rect x="3" y="4" width="16" height="16" rx="3" stroke="#888" stroke-width="1.5"/>
+          <path d="M7 2v4M15 2v4M3 9h16" stroke="#888" stroke-width="1.5" stroke-linecap="round"/>
+          <rect x="6" y="13" width="3" height="3" rx="1" fill="#888"/>
+          <rect x="13" y="13" width="3" height="3" rx="1" fill="#888"/>
+        </svg>
+      </div>
+      <div class="nav-label">Прогресс</div>
+    </button>
+    <button class="nav-item" id="nav-log" onclick="goTo('log')">
+      <div class="nav-icon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <circle cx="11" cy="11" r="8" stroke="#888" stroke-width="1.5"/>
+          <path d="M11 7v4l3 3" stroke="#888" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="nav-label">Сегодня</div>
+    </button>
+    <button class="nav-item" id="nav-settings" onclick="goTo('settings')">
+      <div class="nav-icon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <circle cx="11" cy="11" r="3" stroke="#888" stroke-width="1.5"/>
+          <path d="M11 2v2M11 18v2M2 11h2M18 11h2M4.93 4.93l1.41 1.41M15.66 15.66l1.41 1.41M4.93 17.07l1.41-1.41M15.66 6.34l1.41-1.41" stroke="#888" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="nav-label">Настройки</div>
+    </button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const EXERCISES = [
+  { id: 'pushups',   name: 'Отжимания',           emoji: '💪', target: 100 },
+  { id: 'pullups',   name: 'Подтягивания',         emoji: '🏋️', target: 100 },
+  { id: 'squats',    name: 'Приседания',            emoji: '🦵', target: 100 },
+  { id: 'dips',      name: 'Брусья',               emoji: '🤸', target: 100 },
+  { id: 'crunches',  name: 'Скручивания',          emoji: '🔥', target: 100 },
+  { id: 'kneeraise', name: 'Подъём коленей в висе',emoji: '⬆️', target: 100 },
+  { id: 'lunges',    name: 'Выпады',               emoji: '🚶', target: 100 },
+];
+
+// State
+let state = loadState();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem('sotka_state');
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return {
+    challengeType: 'sotka',
+    selectedExercises: ['pushups','pullups','squats','dips','crunches','kneeraise','lunges'],
+    startDate: '2025-04-01',
+    log: {},        // { 'YYYY-MM-DD': { exerciseId: count, ... } }
+    tempLog: {}     // working log before save
+  };
+}
+
+function saveState() {
+  localStorage.setItem('sotka_state', JSON.stringify(state));
+}
+
+function today() {
+  return new Date().toISOString().slice(0,10);
+}
+
+function dateLabel(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.getDate();
+}
+
+function isRestDay(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  const dow = d.getDay();
+  return dow === 0 || dow === 6;
+}
+
+function getDaysBetween(start, end) {
+  const s = new Date(start + 'T00:00:00');
+  const e = new Date(end + 'T00:00:00');
+  return Math.round((e - s) / 86400000);
+}
+
+function getChallengeDays() {
+  const start = new Date(state.startDate + 'T00:00:00');
+  const days = [];
+  for (let i = 0; i < 30; i++) {
+    const d = new Date(start);
+    d.setDate(d.getDate() + i);
+    days.push(d.toISOString().slice(0,10));
+  }
+  return days;
+}
+
+function getTodayExercises() {
+  const t = today();
+  const days = getChallengeDays();
+  const idx = days.indexOf(t);
+  if (idx < 0) return state.selectedExercises;
+  const ex = state.selectedExercises;
+  const dayOfWeek = new Date(t + 'T00:00:00').getDay();
+  const workDays = days.filter(d => !isRestDay(d));
+  const wIdx = workDays.indexOf(t);
+  if (wIdx < 0) return [];
+  return ex;
+}
+
+function getTarget() {
+  return state.challengeType === 'sotka' ? 100 : Math.ceil(1000 / 30);
+}
+
+function getTotalDone() {
+  return Object.keys(state.log).length;
+}
+
+function getStreak() {
+  const days = getChallengeDays();
+  let streak = 0;
+  const t = today();
+  for (let i = days.length - 1; i >= 0; i--) {
+    const d = days[i];
+    if (d > t) continue;
+    if (isRestDay(d)) continue;
+    if (state.log[d] && isDayComplete(d)) {
+      streak++;
+    } else if (d < t) {
+      break;
+    }
+  }
+  return streak;
+}
+
+function isDayComplete(dateStr) {
+  const log = state.log[dateStr];
+  if (!log) return false;
+  const target = getTarget();
+  const exIds = state.selectedExercises;
+  if (state.challengeType === 'sotka') {
+    return exIds.some(id => (log[id] || 0) >= target);
+  }
+  const total = exIds.reduce((s, id) => s + (log[id] || 0), 0);
+  return total >= target;
+}
+
+function getTotalReps() {
+  let total = 0;
+  Object.values(state.log).forEach(dayLog => {
+    Object.values(dayLog).forEach(v => total += v);
+  });
+  return total;
+}
+
+// Navigation
+let currentScreen = 'home';
+
+function goTo(screen) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('screen-' + screen).classList.add('active');
+  document.getElementById('nav-' + screen).classList.add('active');
+  currentScreen = screen;
+  if (screen === 'home') renderHome();
+  if (screen === 'calendar') renderCalendar();
+  if (screen === 'log') renderLog();
+  if (screen === 'settings') renderSettings();
+}
+
+// HOME
+function renderHome() {
+  const doneDays = Object.keys(state.log).filter(d => isDayComplete(d)).length;
+  const totalReps = getTotalReps();
+  const streak = getStreak();
+
+  document.getElementById('stat-days').textContent = doneDays;
+  document.getElementById('stat-total').textContent = totalReps >= 1000 ? Math.round(totalReps/1000) + 'K' : totalReps;
+  document.getElementById('stat-streak').textContent = streak;
+
+  const pct = Math.round((doneDays / 30) * 100);
+  const circumference = 213.6;
+  const offset = circumference - (pct / 100) * circumference;
+  document.getElementById('ring-fill').style.strokeDashoffset = offset;
+  document.getElementById('ring-pct').textContent = pct + '%';
+  document.getElementById('ring-days').textContent = doneDays + '/30';
+
+  let title = 'Начни сегодня!';
+  let desc = 'На третий день тебя уже не остановить. Главное начать.';
+  if (doneDays >= 25) { title = 'Финишная прямая!'; desc = 'Ещё чуть-чуть и ты другой человек.'; }
+  else if (doneDays >= 15) { title = 'Ты в середине пути!'; desc = 'Уже ' + doneDays + ' дней позади. Форма растёт.'; }
+  else if (doneDays >= 5) { title = 'Войти во вкус!'; desc = 'Тело уже чувствует разницу. Не останавливайся.'; }
+  else if (doneDays > 0) { title = 'Хорошее начало!'; desc = 'Первые дни самые сложные. Ты справляешься.'; }
+
+  document.getElementById('progress-title').textContent = title;
+  document.getElementById('progress-desc').textContent = desc;
+
+  const t = today();
+  const todayLog = state.log[t] || {};
+  const exIds = state.selectedExercises;
+  const target = getTarget();
+  const isRest = isRestDay(t);
+
+  const card = document.getElementById('today-card');
+  if (isRest) {
+    card.innerHTML = `<div style="padding:24px;text-align:center;color:var(--muted);font-size:14px;font-weight:600;">🌙 День отдыха. Восстанавливайся!</div>`;
+    document.getElementById('log-btn').style.display = 'none';
+  } else {
+    card.innerHTML = exIds.map(id => {
+      const ex = EXERCISES.find(e => e.id === id);
+      const done = (todayLog[id] || 0) >= target;
+      return `<div class="today-ex" onclick="goTo('log')">
+        <div class="ex-icon ${done ? 'done' : 'pending'}">${ex.emoji}</div>
+        <div class="ex-info">
+          <div class="ex-name ${done ? 'done' : ''}">${ex.name}</div>
+          <div class="ex-count">${todayLog[id] || 0} / ${target} повторений</div>
+        </div>
+        <div class="ex-check ${done ? 'done' : ''}">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2 6l3 3 5-5" stroke="#0f0f0f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>`;
+    }).join('');
+    document.getElementById('log-btn').style.display = 'block';
+  }
+}
+
+// CALENDAR
+function renderCalendar() {
+  const days = getChallengeDays();
+  const t = today();
+  const start = new Date(state.startDate + 'T00:00:00');
+  const startDow = (start.getDay() + 6) % 7;
+
+  const grid = document.getElementById('calendar-grid');
+  let html = '';
+
+  for (let i = 0; i < startDow; i++) {
+    html += `<div class="cal-day empty"></div>`;
+  }
+
+  days.forEach(d => {
+    const label = dateLabel(d);
+    const rest = isRestDay(d);
+    const done = isDayComplete(d);
+    let cls = 'future';
+    if (rest) cls = 'rest';
+    else if (done) cls = 'done';
+    else if (d === t) cls = 'today';
+    html += `<div class="cal-day ${cls}">${label}</div>`;
+  });
+
+  grid.innerHTML = html;
+
+  // Exercise totals
+  const exTotals = {};
+  state.selectedExercises.forEach(id => exTotals[id] = 0);
+  Object.values(state.log).forEach(dayLog => {
+    Object.keys(dayLog).forEach(id => {
+      if (exTotals[id] !== undefined) exTotals[id] += dayLog[id];
+    });
+  });
+
+  const maxPossible = state.challengeType === 'sotka'
+    ? Object.keys(state.log).filter(d => !isRestDay(d)).length * 100
+    : 1000;
+
+  const breakdown = document.getElementById('ex-breakdown');
+  breakdown.innerHTML = state.selectedExercises.map(id => {
+    const ex = EXERCISES.find(e => e.id === id);
+    const count = exTotals[id] || 0;
+    return `<div class="ex-row">
+      <div class="ex-row-name">${ex.emoji} ${ex.name}</div>
+      <div class="ex-row-count">${count}<span class="ex-row-max"> повт.</span></div>
+    </div>`;
+  }).join('');
+}
+
+// LOG
+function renderLog() {
+  state.tempLog = JSON.parse(JSON.stringify(state.log[today()] || {}));
+  const target = getTarget();
+  const list = document.getElementById('log-exercise-list');
+
+  list.innerHTML = state.selectedExercises.map(id => {
+    const ex = EXERCISES.find(e => e.id === id);
+    const val = state.tempLog[id] || 0;
+    const pct = Math.min(100, Math.round((val / target) * 100));
+    return `<div class="log-ex-card">
+      <div class="log-ex-header">
+        <div class="log-ex-emoji">${ex.emoji}</div>
+        <div>
+          <div class="log-ex-name">${ex.name}</div>
+          <div class="log-ex-target">Цель: ${target} повторений</div>
+        </div>
+      </div>
+      <div class="counter-row">
+        <div class="counter-btn" onclick="changeCount('${id}', -10)">−</div>
+        <div class="counter-bar-wrap">
+          <div class="counter-bar ${pct >= 100 ? 'full' : ''}" id="bar-${id}" style="width:${pct}%"></div>
+        </div>
+        <div class="counter-num" id="cnt-${id}">${val}</div>
+        <div class="counter-btn" onclick="changeCount('${id}', 10)">+</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function changeCount(id, delta) {
+  const target = getTarget();
+  state.tempLog[id] = Math.max(0, Math.min(target * 3, (state.tempLog[id] || 0) + delta));
+  const val = state.tempLog[id];
+  const pct = Math.min(100, Math.round((val / target) * 100));
+  document.getElementById('cnt-' + id).textContent = val;
+  const bar = document.getElementById('bar-' + id);
+  bar.style.width = pct + '%';
+  if (pct >= 100) bar.classList.add('full');
+  else bar.classList.remove('full');
+}
+
+function saveLog() {
+  const t = today();
+  state.log[t] = JSON.parse(JSON.stringify(state.tempLog));
+  saveState();
+  showToast('Тренировка сохранена!');
+  setTimeout(() => goTo('home'), 800);
+}
+
+// SETTINGS
+function renderSettings() {
+  const ctSotka = document.getElementById('ct-sotka');
+  const ctTysyacha = document.getElementById('ct-tysyacha');
+  if (state.challengeType === 'sotka') {
+    ctSotka.classList.add('selected');
+    ctTysyacha.classList.remove('selected');
+    document.getElementById('target-info').innerHTML = `Сотка: <em>100 повторений в день</em>, 5 дней в неделю, 30 дней.`;
+  } else {
+    ctTysyacha.classList.add('selected');
+    ctSotka.classList.remove('selected');
+    document.getElementById('target-info').innerHTML = `Тысяча: <em>~33 повторения в день</em>, итого 1000 за месяц. Для продвинутых: берёшь все упражнения.`;
+  }
+
+  const sel = document.getElementById('ex-selector');
+  sel.innerHTML = EXERCISES.map(ex => {
+    const selected = state.selectedExercises.includes(ex.id);
+    return `<div class="ex-sel-item ${selected ? 'selected' : ''}" id="sel-${ex.id}" onclick="toggleEx('${ex.id}')">
+      <div class="ex-sel-emoji">${ex.emoji}</div>
+      <div class="ex-sel-name">${ex.name}</div>
+      <div class="ex-sel-check">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M2 6l3 3 5-5" stroke="#0f0f0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleEx(id) {
+  const idx = state.selectedExercises.indexOf(id);
+  if (idx >= 0) {
+    if (state.selectedExercises.length <= 1) return;
+    state.selectedExercises.splice(idx, 1);
+    document.getElementById('sel-' + id).classList.remove('selected');
+  } else {
+    state.selectedExercises.push(id);
+    document.getElementById('sel-' + id).classList.add('selected');
+  }
+}
+
+function setChallengeType(type) {
+  state.challengeType = type;
+  renderSettings();
+}
+
+function saveSettings() {
+  saveState();
+  showToast('Настройки сохранены!');
+  setTimeout(() => goTo('home'), 600);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// Init Telegram
+try {
+  if (window.Telegram && window.Telegram.WebApp) {
+    window.Telegram.WebApp.ready();
+    window.Telegram.WebApp.expand();
+  }
+} catch(e) {}
+
+// Init
+renderHome();
+</script>
+</body>
+</html>
