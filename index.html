@@ -816,7 +816,7 @@
         </div>
         <div class="progress-info">
           <div class="progress-title" id="progress-title">Начни сегодня!</div>
-          <div class="progress-desc" id="progress-desc">На третий день тебя уже не остановить. Главное начать.</div>
+          <div class="progress-desc" id="progress-desc">В первый день сложно начать. На пятый день тебя уже не остановить. Через 30 дней ты другой человек. Главное: начать.</div>
         </div>
       </div>
 
@@ -887,7 +887,7 @@
         </div>
       </div>
       <div class="target-info" id="target-info">
-        Сотка: <em>100 повторений в день</em>, 5 дней в неделю, 30 дней.
+        Сотка: <em>100 повторений в день</em>, каждый день 30 дней подряд.
       </div>
 
       <div class="section-label">Упражнения</div>
@@ -953,25 +953,53 @@ const EXERCISES = [
   { id: 'lunges',    name: 'Выпады',               emoji: '🚶', target: 100 },
 ];
 
-// State
-let state = loadState();
+// Storage: Telegram CloudStorage with localStorage fallback
+const TG = window.Telegram && window.Telegram.WebApp;
+const CS = TG && TG.CloudStorage;
 
-function loadState() {
-  try {
-    const raw = localStorage.getItem('sotka_state');
-    if (raw) return JSON.parse(raw);
-  } catch(e) {}
-  return {
-    challengeType: 'sotka',
-    selectedExercises: ['pushups','pullups','squats','dips','crunches','kneeraise','lunges'],
-    startDate: '2025-04-01',
-    log: {},        // { 'YYYY-MM-DD': { exerciseId: count, ... } }
-    tempLog: {}     // working log before save
-  };
+function storageGet(key) {
+  return new Promise(resolve => {
+    if (CS) {
+      CS.getItem(key, (err, val) => resolve(val || null));
+    } else {
+      resolve(localStorage.getItem(key));
+    }
+  });
 }
 
-function saveState() {
-  localStorage.setItem('sotka_state', JSON.stringify(state));
+function storageSet(key, value) {
+  return new Promise(resolve => {
+    if (CS) {
+      CS.setItem(key, value, () => resolve());
+    } else {
+      localStorage.setItem(key, value);
+      resolve();
+    }
+  });
+}
+
+// State
+let state = {
+  challengeType: 'sotka',
+  selectedExercises: ['pushups','pullups','squats','dips','crunches','kneeraise','lunges'],
+  startDate: '2026-04-01',
+  challengeFinished: false,
+  log: {},
+  tempLog: {}
+};
+
+async function loadState() {
+  try {
+    const raw = await storageGet('sotka_state');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      state = Object.assign(state, parsed);
+    }
+  } catch(e) {}
+}
+
+async function saveState() {
+  await storageSet('sotka_state', JSON.stringify(state));
 }
 
 function today() {
@@ -1006,17 +1034,15 @@ function getChallengeDays() {
   return days;
 }
 
+function isRestDay(dateStr) { return false; }
+
 function getTodayExercises() {
-  const t = today();
+  return state.selectedExercises;
+}
+
+function isChallengeComplete() {
   const days = getChallengeDays();
-  const idx = days.indexOf(t);
-  if (idx < 0) return state.selectedExercises;
-  const ex = state.selectedExercises;
-  const dayOfWeek = new Date(t + 'T00:00:00').getDay();
-  const workDays = days.filter(d => !isRestDay(d));
-  const wIdx = workDays.indexOf(t);
-  if (wIdx < 0) return [];
-  return ex;
+  return days.filter(d => isDayComplete(d)).length >= days.length;
 }
 
 function getTarget() {
@@ -1097,7 +1123,7 @@ function renderHome() {
   document.getElementById('ring-days').textContent = doneDays + '/30';
 
   let title = 'Начни сегодня!';
-  let desc = 'На третий день тебя уже не остановить. Главное начать.';
+  let desc = 'В первый день сложно начать. На пятый день тебя уже не остановить. Через 30 дней ты другой человек. Главное: начать.';
   if (doneDays >= 25) { title = 'Финишная прямая!'; desc = 'Ещё чуть-чуть и ты другой человек.'; }
   else if (doneDays >= 15) { title = 'Ты в середине пути!'; desc = 'Уже ' + doneDays + ' дней позади. Форма растёт.'; }
   else if (doneDays >= 5) { title = 'Войти во вкус!'; desc = 'Тело уже чувствует разницу. Не останавливайся.'; }
@@ -1245,7 +1271,7 @@ function renderSettings() {
   if (state.challengeType === 'sotka') {
     ctSotka.classList.add('selected');
     ctTysyacha.classList.remove('selected');
-    document.getElementById('target-info').innerHTML = `Сотка: <em>100 повторений в день</em>, 5 дней в неделю, 30 дней.`;
+    document.getElementById('target-info').innerHTML = `Сотка: <em>100 повторений в день</em>, каждый день 30 дней подряд.`;
   } else {
     ctTysyacha.classList.add('selected');
     ctSotka.classList.remove('selected');
@@ -1280,7 +1306,12 @@ function toggleEx(id) {
 }
 
 function setChallengeType(type) {
+  if (Object.keys(state.log).length > 0 && !isChallengeComplete()) {
+    showToast('Сначала заверши текущий челлендж!');
+    return;
+  }
   state.challengeType = type;
+  state.log = {};
   renderSettings();
 }
 
@@ -1297,16 +1328,17 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2000);
 }
 
-// Init Telegram
-try {
-  if (window.Telegram && window.Telegram.WebApp) {
-    window.Telegram.WebApp.ready();
-    window.Telegram.WebApp.expand();
-  }
-} catch(e) {}
-
 // Init
-renderHome();
+(async () => {
+  try {
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.ready();
+      window.Telegram.WebApp.expand();
+    }
+  } catch(e) {}
+  await loadState();
+  renderHome();
+})();
 </script>
 </body>
 </html>
