@@ -783,7 +783,10 @@
       <div class="home-header">
         <div class="home-tag">30 дней · старт 1 апреля</div>
         <div class="home-title">ЧЕЛЛЕНДЖ<br>СОТКА</div>
-        <div class="home-sub">100 повторений в день меняют всё</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px;">
+          <div class="home-sub">100 повторений в день меняют всё</div>
+          <div id="tg-avatar" style="width:40px;height:40px;border-radius:50%;background:#0f0f0f;overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;color:#c8f035;flex-shrink:0;"></div>
+        </div>
       </div>
 
       <div class="stats-row">
@@ -881,9 +884,13 @@
           <div class="ct-num">100</div>
           <div class="ct-label">повторений<br>в день</div>
         </div>
-        <div class="challenge-type-btn" id="ct-tysyacha" onclick="setChallengeType('tysyacha')">
+        <div class="challenge-type-btn" id="ct-tysyacha" onclick="setChallengeType('tysyacha')" style="position:relative;">
           <div class="ct-num">1000</div>
           <div class="ct-label">повторений<br>за месяц</div>
+          <div id="tysyacha-lock" style="position:absolute;inset:0;background:rgba(15,15,15,0.7);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="8" width="12" height="9" rx="2" stroke="#888" stroke-width="1.5"/><path d="M6 8V5.5a3 3 0 016 0V8" stroke="#888" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <div style="font-size:9px;color:#666;font-weight:700;text-align:center;line-height:1.3;">после<br>сотки</div>
+          </div>
         </div>
       </div>
       <div class="target-info" id="target-info">
@@ -1024,11 +1031,9 @@ function getDaysBetween(start, end) {
 }
 
 function getChallengeDays() {
-  const start = new Date(state.startDate + 'T00:00:00');
   const days = [];
-  for (let i = 0; i < 30; i++) {
-    const d = new Date(start);
-    d.setDate(d.getDate() + i);
+  for (let i = 1; i <= 30; i++) {
+    const d = new Date(Date.UTC(2026, 3, i));
     days.push(d.toISOString().slice(0,10));
   }
   return days;
@@ -1167,8 +1172,8 @@ function renderHome() {
 function renderCalendar() {
   const days = getChallengeDays();
   const t = today();
-  const start = new Date(state.startDate + 'T00:00:00');
-  const startDow = (start.getDay() + 6) % 7;
+  const start = new Date('2026-04-01T00:00:00');
+  const startDow = (start.getDay() + 6) % 7; // Wednesday = 2
 
   const grid = document.getElementById('calendar-grid');
   let html = '';
@@ -1256,10 +1261,31 @@ function changeCount(id, delta) {
   else bar.classList.remove('full');
 }
 
-function saveLog() {
+async function syncToServer() {
+  try {
+    const tg = window.Telegram && window.Telegram.WebApp;
+    const user = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
+    await fetch('/api/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tg_user_id: user ? user.id : 'browser_' + (localStorage.getItem('anon_id') || (() => { const id = Math.random().toString(36).slice(2); localStorage.setItem('anon_id', id); return id; })()),
+        tg_username: user ? user.username : null,
+        tg_first_name: user ? user.first_name : null,
+        challenge_type: state.challengeType,
+        selected_exercises: state.selectedExercises,
+        start_date: state.startDate,
+        log: state.log
+      })
+    });
+  } catch(e) {}
+}
+
+async function saveLog() {
   const t = today();
   state.log[t] = JSON.parse(JSON.stringify(state.tempLog));
-  saveState();
+  await saveState();
+  syncToServer();
   showToast('Тренировка сохранена!');
   setTimeout(() => goTo('home'), 800);
 }
@@ -1278,6 +1304,11 @@ function renderSettings() {
     document.getElementById('target-info').innerHTML = `Тысяча: <em>~33 повторения в день</em>, итого 1000 за месяц. Для продвинутых: берёшь все упражнения.`;
   }
 
+  const lock = document.getElementById('tysyacha-lock');
+  if (lock) {
+    const sotkaDone = state.challengeType === 'sotka' && isChallengeComplete();
+    lock.style.display = sotkaDone ? 'none' : 'flex';
+  }
   const sel = document.getElementById('ex-selector');
   sel.innerHTML = EXERCISES.map(ex => {
     const selected = state.selectedExercises.includes(ex.id);
@@ -1306,6 +1337,13 @@ function toggleEx(id) {
 }
 
 function setChallengeType(type) {
+  if (type === 'tysyacha') {
+    const sotkaDone = isChallengeComplete() && state.challengeType === 'sotka';
+    if (!sotkaDone) {
+      showToast('Сначала заверши Сотку!');
+      return;
+    }
+  }
   if (Object.keys(state.log).length > 0 && !isChallengeComplete()) {
     showToast('Сначала заверши текущий челлендж!');
     return;
@@ -1337,6 +1375,20 @@ function showToast(msg) {
     }
   } catch(e) {}
   await loadState();
+
+  // Аватарка из Телеграм
+  const tgUser = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user;
+  const avatarEl = document.getElementById('tg-avatar');
+  if (avatarEl) {
+    if (tgUser && tgUser.photo_url) {
+      avatarEl.innerHTML = `<img src="${tgUser.photo_url}" style="width:100%;height:100%;object-fit:cover;">`;
+    } else if (tgUser && tgUser.first_name) {
+      avatarEl.textContent = tgUser.first_name.charAt(0).toUpperCase();
+    } else {
+      avatarEl.textContent = 'Е';
+    }
+  }
+
   renderHome();
 })();
 </script>
