@@ -772,6 +772,71 @@
   }
 
   .scroll-content::-webkit-scrollbar { display: none; }
+
+  .badges-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 0 16px 8px;
+  }
+
+  .badge-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 10px;
+    text-align: center;
+    position: relative;
+  }
+
+  .badge-card.earned {
+    border-color: var(--green);
+    background: rgba(200,240,53,0.06);
+  }
+
+  .badge-card.locked {
+    opacity: 0.45;
+  }
+
+  .badge-emoji {
+    font-size: 28px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .badge-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+
+  .badge-desc {
+    font-size: 10px;
+    color: var(--muted);
+    line-height: 1.3;
+  }
+
+  .badge-new {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+
+  .badges-nav-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    position: absolute;
+    top: 4px;
+    right: 4px;
+  }
 </style>
 </head>
 <body>
@@ -904,6 +969,19 @@
     </div>
   </div>
 
+  <!-- BADGES -->
+  <div class="screen" id="screen-badges">
+    <div class="scroll-content">
+      <div class="screen-header">
+        <div class="screen-title">Достижения</div>
+      </div>
+      <div class="section-label" id="badges-earned-label">Получено</div>
+      <div class="badges-grid" id="badges-earned"></div>
+      <div class="section-label" id="badges-locked-label">Впереди</div>
+      <div class="badges-grid" id="badges-locked"></div>
+    </div>
+  </div>
+
   <!-- BOTTOM NAV -->
   <div class="bottom-nav">
     <button class="nav-item active" id="nav-home" onclick="goTo('home')">
@@ -935,6 +1013,16 @@
       </div>
       <div class="nav-label">Сегодня</div>
     </button>
+    <button class="nav-item" id="nav-badges" onclick="goTo('badges')" style="position:relative;">
+      <div class="nav-icon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <circle cx="11" cy="8" r="5" stroke="#888" stroke-width="1.5"/>
+          <path d="M7 13l-3 7 7-3 7 3-3-7" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="nav-label">Награды</div>
+      <div class="badges-nav-dot" id="badges-nav-dot" style="display:none;"></div>
+    </button>
     <button class="nav-item" id="nav-settings" onclick="goTo('settings')">
       <div class="nav-icon">
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
@@ -950,14 +1038,60 @@
 <div class="toast" id="toast"></div>
 
 <script>
+const EXERCISE_ICONS = {
+  pushups: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c8f035" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="17" cy="4" r="2"/>
+    <path d="M3 14h4l2 4h2l2-8 2 3h4"/>
+    <path d="M5 14v4"/>
+  </svg>`,
+  pullups: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c8f035" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 5h18"/>
+    <circle cx="12" cy="9" r="2"/>
+    <path d="M10 11v5l-2 4M14 11v5l2 4"/>
+    <path d="M10 13h4"/>
+  </svg>`,
+  squats: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c8f035" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="4" r="2"/>
+    <path d="M12 6v5l-4 5v4M12 11l4 5v4"/>
+    <path d="M8 20h2M14 20h2"/>
+  </svg>`,
+  dips: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c8f035" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 6v10M19 6v10"/>
+    <path d="M3 6h4M17 6h4"/>
+    <circle cx="12" cy="5" r="2"/>
+    <path d="M10 7v6l-1 5M14 7v6l1 5"/>
+    <path d="M9 18h6"/>
+  </svg>`,
+  crunches: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c8f035" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="4" r="2"/>
+    <path d="M5 20h4l3-7 3 7h4"/>
+    <path d="M9 13c2-1 4-1 6 0"/>
+    <path d="M7 20v-3M17 20v-3"/>
+  </svg>`,
+  kneeraise: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c8f035" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M8 3h8"/>
+    <path d="M10 3v3M14 3v3"/>
+    <circle cx="12" cy="9" r="2"/>
+    <path d="M10 11v3l-3 4M14 11v3l3 4"/>
+    <path d="M9 14l6 0"/>
+    <path d="M11 14l-1 3M13 14l1 3"/>
+  </svg>`,
+  lunges: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c8f035" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="13" cy="4" r="2"/>
+    <path d="M13 6v5l4 5v4"/>
+    <path d="M13 11l-5 3v6"/>
+    <path d="M8 20h4M15 20h4"/>
+  </svg>`,
+};
+
 const EXERCISES = [
-  { id: 'pushups',   name: 'Отжимания',           emoji: '💪', target: 100 },
-  { id: 'pullups',   name: 'Подтягивания',         emoji: '🏋️', target: 100 },
-  { id: 'squats',    name: 'Приседания',            emoji: '🦵', target: 100 },
-  { id: 'dips',      name: 'Брусья',               emoji: '🤸', target: 100 },
-  { id: 'crunches',  name: 'Скручивания',          emoji: '🔥', target: 100 },
-  { id: 'kneeraise', name: 'Подъём коленей в висе',emoji: '⬆️', target: 100 },
-  { id: 'lunges',    name: 'Выпады',               emoji: '🚶', target: 100 },
+  { id: 'pushups',   name: 'Отжимания',            target: 100 },
+  { id: 'pullups',   name: 'Подтягивания',          target: 100 },
+  { id: 'squats',    name: 'Приседания',             target: 100 },
+  { id: 'dips',      name: 'Брусья',                target: 100 },
+  { id: 'crunches',  name: 'Скручивания',           target: 100 },
+  { id: 'kneeraise', name: 'Подъём коленей в висе', target: 100 },
+  { id: 'lunges',    name: 'Выпады',                target: 100 },
 ];
 
 // Storage: Telegram CloudStorage with localStorage fallback
@@ -1108,6 +1242,7 @@ function goTo(screen) {
   if (screen === 'calendar') renderCalendar();
   if (screen === 'log') renderLog();
   if (screen === 'settings') renderSettings();
+  if (screen === 'badges') renderBadges();
 }
 
 // HOME
@@ -1152,7 +1287,7 @@ function renderHome() {
       const ex = EXERCISES.find(e => e.id === id);
       const done = (todayLog[id] || 0) >= target;
       return `<div class="today-ex" onclick="goTo('log')">
-        <div class="ex-icon ${done ? 'done' : 'pending'}">${ex.emoji}</div>
+        <div class="ex-icon ${done ? 'done' : 'pending'}">${EXERCISE_ICONS[ex.id]}</div>
         <div class="ex-info">
           <div class="ex-name ${done ? 'done' : ''}">${ex.name}</div>
           <div class="ex-count">${todayLog[id] || 0} / ${target} повторений</div>
@@ -1213,7 +1348,7 @@ function renderCalendar() {
     const ex = EXERCISES.find(e => e.id === id);
     const count = exTotals[id] || 0;
     return `<div class="ex-row">
-      <div class="ex-row-name">${ex.emoji} ${ex.name}</div>
+      <div class="ex-row-name"><span style='display:inline-flex;vertical-align:middle;margin-right:6px;'>${EXERCISE_ICONS[ex.id]}</span>${ex.name}</div>
       <div class="ex-row-count">${count}<span class="ex-row-max"> повт.</span></div>
     </div>`;
   }).join('');
@@ -1231,7 +1366,7 @@ function renderLog() {
     const pct = Math.min(100, Math.round((val / target) * 100));
     return `<div class="log-ex-card">
       <div class="log-ex-header">
-        <div class="log-ex-emoji">${ex.emoji}</div>
+        <div class="log-ex-emoji" style="font-size:0;">${EXERCISE_ICONS[ex.id]}</div>
         <div>
           <div class="log-ex-name">${ex.name}</div>
           <div class="log-ex-target">Цель: ${target} повторений</div>
@@ -1286,6 +1421,7 @@ async function saveLog() {
   state.log[t] = JSON.parse(JSON.stringify(state.tempLog));
   await saveState();
   syncToServer();
+  checkNewBadges();
   showToast('Тренировка сохранена!');
   setTimeout(() => goTo('home'), 800);
 }
@@ -1313,7 +1449,7 @@ function renderSettings() {
   sel.innerHTML = EXERCISES.map(ex => {
     const selected = state.selectedExercises.includes(ex.id);
     return `<div class="ex-sel-item ${selected ? 'selected' : ''}" id="sel-${ex.id}" onclick="toggleEx('${ex.id}')">
-      <div class="ex-sel-emoji">${ex.emoji}</div>
+      <div class="ex-sel-emoji" style="font-size:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center;">${EXERCISE_ICONS[ex.id]}</div>
       <div class="ex-sel-name">${ex.name}</div>
       <div class="ex-sel-check">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -1357,6 +1493,67 @@ function saveSettings() {
   saveState();
   showToast('Настройки сохранены!');
   setTimeout(() => goTo('home'), 600);
+}
+
+// BADGES
+const BADGES = [
+  { id: 'first_step',    emoji: '👣', name: 'Первый шаг',          desc: 'Первая тренировка',           check: (s) => Object.keys(s.log).length >= 1 },
+  { id: 'streak_3',      emoji: '🔥', name: 'Разогрелся',          desc: '3 дня подряд',                check: (s) => getStreak() >= 3 },
+  { id: 'streak_7',      emoji: '⚡', name: 'Неделя без остановок', desc: '7 дней подряд',               check: (s) => getStreak() >= 7 },
+  { id: 'streak_14',     emoji: '🤖', name: 'Машина',              desc: '14 дней подряд',              check: (s) => getStreak() >= 14 },
+  { id: 'streak_30',     emoji: '🏆', name: 'Легенда',             desc: '30 дней подряд',              check: (s) => getStreak() >= 30 },
+  { id: 'reps_1000',     emoji: '💪', name: 'Тысячник',            desc: '1000 повторений всего',       check: (s) => getTotalReps() >= 1000 },
+  { id: 'reps_5000',     emoji: '👹', name: 'Монстр',              desc: '5000 повторений всего',       check: (s) => getTotalReps() >= 5000 },
+  { id: 'reps_10000',    emoji: '🔱', name: 'Сотка x100',          desc: '10000 повторений всего',      check: (s) => getTotalReps() >= 10000 },
+  { id: 'iron_will',     emoji: '🥇', name: 'Железная воля',       desc: 'Ни одного пропуска',          check: (s) => { const days = getChallengeDays().filter(d => d <= today()); return days.length > 0 && days.every(d => isDayComplete(d)); } },
+  { id: 'finish_sotka',  emoji: '🎖', name: 'Финишёр Сотки',       desc: '3000 повторений за месяц',    check: (s) => getTotalReps() >= 3000 && s.challengeType === 'sotka' },
+  { id: 'finish_1000',   emoji: '💎', name: 'Финишёр Тысячи',      desc: 'Завершил челлендж 1000',      check: (s) => isChallengeComplete() && s.challengeType === 'tysyacha' },
+];
+
+function getEarnedBadges() {
+  return BADGES.filter(b => b.check(state));
+}
+
+function checkNewBadges() {
+  const earned = getEarnedBadges().map(b => b.id);
+  const prev = state.seenBadges || [];
+  const newOnes = earned.filter(id => !prev.includes(id));
+  if (newOnes.length > 0) {
+    state.seenBadges = earned;
+    saveState();
+    document.getElementById('badges-nav-dot').style.display = 'block';
+    newOnes.forEach(id => {
+      const b = BADGES.find(x => x.id === id);
+      if (b) showToast(b.emoji + ' ' + b.name + '!');
+    });
+  }
+}
+
+function renderBadges() {
+  const earned = getEarnedBadges();
+  const locked = BADGES.filter(b => !b.check(state));
+  state.seenBadges = earned.map(b => b.id);
+  saveState();
+  document.getElementById('badges-nav-dot').style.display = 'none';
+
+  const earnedEl = document.getElementById('badges-earned');
+  const lockedEl = document.getElementById('badges-locked');
+  document.getElementById('badges-earned-label').textContent = 'Получено (' + earned.length + ')';
+  document.getElementById('badges-locked-label').textContent = 'Впереди (' + locked.length + ')';
+
+  earnedEl.innerHTML = earned.length === 0
+    ? '<div style="grid-column:1/-1;padding:16px;text-align:center;color:var(--muted);font-size:13px;">Пока нет. Начни тренироваться!</div>'
+    : earned.map(b => `<div class="badge-card earned">
+        <div class="badge-emoji">${b.emoji}</div>
+        <div class="badge-name">${b.name}</div>
+        <div class="badge-desc">${b.desc}</div>
+      </div>`).join('');
+
+  lockedEl.innerHTML = locked.map(b => `<div class="badge-card locked">
+      <div class="badge-emoji">${b.emoji}</div>
+      <div class="badge-name">${b.name}</div>
+      <div class="badge-desc">${b.desc}</div>
+    </div>`).join('');
 }
 
 function showToast(msg) {
