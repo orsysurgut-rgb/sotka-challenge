@@ -1276,7 +1276,11 @@ async function saveState() {
 }
 
 function today() {
-  return new Date().toISOString().slice(0,10);
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + day;
 }
 
 function dateLabel(dateStr) {
@@ -1383,25 +1387,29 @@ function goTo(screen) {
 
 // HOME
 function renderHome() {
-  const doneDays = Object.keys(state.log).filter(d => isDayComplete(d)).length;
+  const allDays = getChallengeDays();
+  const t = today();
+  const calendarDay = allDays.indexOf(t) + 1;
+  const doneDays = calendarDay > 0 ? calendarDay : 0;
   const totalReps = getTotalReps();
   const streak = getStreak();
 
-  document.getElementById('stat-days').textContent = doneDays;
   document.getElementById('stat-total').textContent = totalReps >= 1000 ? Math.round(totalReps/1000) + 'K' : totalReps;
   document.getElementById('stat-streak').textContent = streak;
 
+  const completedDays = Object.keys(state.log).filter(d => isDayComplete(d)).length;
   const pct = Math.round((doneDays / 30) * 100);
   const circumference = 213.6;
   const offset = circumference - (pct / 100) * circumference;
   document.getElementById('ring-fill').style.strokeDashoffset = offset;
   document.getElementById('ring-pct').textContent = pct + '%';
   document.getElementById('ring-days').textContent = doneDays + '/30';
+  document.getElementById('stat-days').textContent = doneDays;
 
   const PHRASES = [
     ['Начни сегодня', 'В первый день сложно начать. На пятый тебя не остановить. Через 30 ты другой человек.'],
     ['День первый', 'Первый шаг самый важный. Ты уже сделал его.'],
-    ['Сегодня ты стал сильнее', 'Каждое повторение меняет тебя. Продолжай.'],
+    ['Сегодня ты стал сильнее', 'Каждое повторение меняет тебя. Ты знаешь что надо делать. Продолжай.'],
     ['Характер куётся здесь', 'Не когда легко, а когда делаешь через не хочу.'],
     ['Тело помнит всё', 'Каждая тренировка откладывается в мышцах и голове.'],
     ['Пять дней позади', 'Ты уже не тот что был в начале. Чувствуешь?'],
@@ -1432,9 +1440,10 @@ function renderHome() {
   ];
 
   // Текущий день челленджа (сколько дней прошло с 1 апреля)
-  const startD = new Date(Date.UTC(2026, 3, 1));
-  const nowD = new Date();
-  const challengeDay = Math.max(0, Math.min(29, Math.floor((nowD - startD) / 86400000)));
+  const nowLocal = new Date();
+  const startD = new Date(2026, 3, 1); // April 1 local time
+  const nowMidnight = new Date(nowLocal.getFullYear(), nowLocal.getMonth(), nowLocal.getDate());
+  const challengeDay = Math.max(0, Math.min(29, Math.floor((nowMidnight - startD) / 86400000)));
   const todayComplete = isDayComplete(today());
   let title, desc;
 
@@ -1446,17 +1455,19 @@ function renderHome() {
     'Сегодняшний день ещё можно сделать победным.',
   ];
 
-  title = PHRASES[challengeDay][0];
+  // doneDays = calendar day (1=April 1, 2=April 2, etc)
+  // PHRASES[0] = before start, PHRASES[1] = day 1, PHRASES[2] = day 2...
+  const phraseIdx = Math.min(doneDays, PHRASES.length - 1);
+  title = PHRASES[phraseIdx][0];
   if (todayComplete) {
-    desc = PHRASES[challengeDay][1];
+    desc = PHRASES[phraseIdx][1];
   } else {
-    desc = motivate[challengeDay % motivate.length];
+    desc = motivate[doneDays % motivate.length];
   }
 
   document.getElementById('progress-title').textContent = title;
   document.getElementById('progress-desc').textContent = desc;
 
-  const t = today();
   const todayLog = state.log[t] || {};
   const exIds = state.selectedExercises;
   const target = getTarget();
@@ -1834,9 +1845,7 @@ function showToast(msg) {
   const tgUser = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user;
   const avatarEl = document.getElementById('tg-avatar');
   if (avatarEl) {
-    if (tgUser && tgUser.photo_url) {
-      avatarEl.innerHTML = `<img src="${tgUser.photo_url}" style="width:100%;height:100%;object-fit:cover;">`;
-    } else if (tgUser && tgUser.first_name) {
+    if (tgUser && tgUser.first_name) {
       avatarEl.textContent = tgUser.first_name.charAt(0).toUpperCase();
     } else {
       avatarEl.textContent = 'Е';
