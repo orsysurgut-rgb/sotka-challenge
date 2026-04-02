@@ -701,7 +701,7 @@
     background: rgba(15,15,15,0.95);
     border-top: 0.5px solid var(--border);
     display: flex;
-    padding: 8px 0 env(safe-area-inset-bottom, 8px); padding-left: 2.5%;
+    padding: 8px 0 env(safe-area-inset-bottom, 8px); padding-left: 2.5%; margin-top: -1%;
     backdrop-filter: blur(12px);
   }
 
@@ -1431,26 +1431,26 @@ function renderHome() {
     ['Ты сделал это', 'Тридцать дней. Ты другой человек. Это навсегда.'],
   ];
 
-  const phraseIdx = Math.min(doneDays, PHRASES.length - 1);
+  // Текущий день челленджа (сколько дней прошло с 1 апреля)
+  const startD = new Date(Date.UTC(2026, 3, 1));
+  const nowD = new Date();
+  const challengeDay = Math.max(0, Math.min(29, Math.floor((nowD - startD) / 86400000)));
   const todayComplete = isDayComplete(today());
   let title, desc;
 
-  if (doneDays === 0) {
-    title = PHRASES[0][0];
-    desc = PHRASES[0][1];
-  } else if (todayComplete) {
-    title = PHRASES[Math.min(doneDays, PHRASES.length - 1)][0];
-    desc = PHRASES[Math.min(doneDays, PHRASES.length - 1)][1];
+  const motivate = [
+    'Осталось совсем немного до выполнения нормы. Вперёд.',
+    'День не закрыт. Сделай свои 100 прямо сейчас.',
+    'Не ложись спать без тренировки. Ты знаешь что надо.',
+    'Твоя серия ждёт. Не подведи себя.',
+    'Сегодняшний день ещё можно сделать победным.',
+  ];
+
+  title = PHRASES[challengeDay][0];
+  if (todayComplete) {
+    desc = PHRASES[challengeDay][1];
   } else {
-    const motivate = [
-      'Осталось совсем немного до выполнения нормы. Вперёд.',
-      'День не закрыт. Сделай свои 100 прямо сейчас.',
-      'Не ложись спать без тренировки. Ты знаешь что надо.',
-      'Твоя серия ждёт. Не подведи себя.',
-      'Сегодняшний день ещё можно сделать победным.',
-    ];
-    title = PHRASES[Math.min(doneDays, PHRASES.length - 1)][0];
-    desc = motivate[doneDays % motivate.length];
+    desc = motivate[challengeDay % motivate.length];
   }
 
   document.getElementById('progress-title').textContent = title;
