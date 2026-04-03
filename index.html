@@ -364,9 +364,10 @@
   /* Legend */
   .legend {
     display: flex;
-    gap: 14px;
+    gap: 8px;
     padding: 0 16px 16px;
     flex-wrap: wrap;
+    align-items: center;
   }
 
   .legend-item {
@@ -932,12 +933,7 @@
       </div>
       <div class="calendar-grid" id="calendar-grid"></div>
 
-      <div class="legend">
-        <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div> Выполнено</div>
-        <div class="legend-item"><div class="legend-dot" style="background:var(--surface);border:0.5px solid var(--green)"></div> Сегодня</div>
-        <div class="legend-item"><div class="legend-dot" style="background:var(--surface);border:0.5px solid var(--border)"></div> Впереди</div>
-        <div class="legend-item"><div class="legend-dot" style="background:transparent;border:0.5px solid #222"></div> Отдых</div>
-      </div>
+      <div class="legend" id="calendar-legend"></div>
 
       <div class="section-label">Упражнения</div>
       <div class="ex-breakdown" id="ex-breakdown"></div>
@@ -948,7 +944,10 @@
   <div class="screen" id="screen-log">
     <div class="scroll-content">
       <div class="screen-header">
-        <div class="screen-title">Тренировка</div>
+        <div class="screen-title" id="log-screen-title">Тренировка</div>
+      </div>
+      <div style="padding: 0 16px 12px;">
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:4px;display:flex;gap:4px;overflow-x:auto;" id="day-selector"></div>
       </div>
       <div class="log-exercise-list" id="log-exercise-list"></div>
       <button class="save-all-btn" id="save-all-btn" onclick="saveLog()">Сохранить тренировку</button>
@@ -1381,7 +1380,7 @@ function goTo(screen) {
   currentScreen = screen;
   if (screen === 'home') renderHome();
   if (screen === 'calendar') renderCalendar();
-  if (screen === 'log') renderLog();
+  if (screen === 'log') { currentLogDate = today(); renderLog(); }
   if (screen === 'settings') renderSettings();
   if (screen === 'badges') renderBadges();
   if (screen === 'help') renderHelp();
@@ -1543,6 +1542,32 @@ function renderCalendar() {
 
   const maxPossibleReps = state.challengeType === 'sotka' ? 3000 : 1000;
 
+  const doneLegend = days.filter(d => isDayComplete(d)).length;
+  const aheadLegend = days.filter(d => d > t).length;
+  const legendEl = document.getElementById('calendar-legend');
+  if (legendEl) {
+    legendEl.innerHTML = `
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:5px;">
+          <div class="legend-dot" style="background:var(--surface);border:0.5px solid var(--green);flex-shrink:0;"></div>
+          <span style="font-size:11px;color:var(--muted);font-weight:500;">Сегодня</span>
+        </div>
+        <span style="color:var(--border);font-size:11px;">·</span>
+        <div style="display:flex;align-items:center;gap:5px;">
+          <div class="legend-dot" style="background:var(--green);flex-shrink:0;"></div>
+          <span style="font-size:11px;color:var(--muted);font-weight:500;">Выполнено дней:</span>
+          <span style="font-size:11px;font-weight:700;color:var(--green);border:1px solid var(--green);border-radius:20px;padding:1px 7px;">${doneLegend}</span>
+        </div>
+        <span style="color:var(--border);font-size:11px;">·</span>
+        <div style="display:flex;align-items:center;gap:5px;">
+          <div class="legend-dot" style="background:var(--surface);border:0.5px solid var(--border);flex-shrink:0;"></div>
+          <span style="font-size:11px;color:var(--muted);font-weight:500;">Впереди дней:</span>
+          <span style="font-size:11px;font-weight:700;color:var(--muted);border:1px solid var(--border);border-radius:20px;padding:1px 7px;">${aheadLegend}</span>
+        </div>
+      </div>
+    `;
+  }
+
   const breakdown = document.getElementById('ex-breakdown');
   breakdown.innerHTML = state.selectedExercises.map(id => {
     const ex = EXERCISES.find(e => e.id === id);
@@ -1574,8 +1599,33 @@ function renderCalendar() {
 }
 
 // LOG
+let currentLogDate = today();
+
+function selectLogDay(date) {
+  currentLogDate = date;
+  renderLog();
+}
+
 function renderLog() {
-  state.tempLog = JSON.parse(JSON.stringify(state.log[today()] || {}));
+  // Build day selector - last 7 days that are within challenge
+  const days = getChallengeDays();
+  const t = today();
+  const pastDays = days.filter(d => d <= t).slice(-7).reverse();
+
+  const selector = document.getElementById('day-selector');
+  if (selector) {
+    selector.innerHTML = pastDays.map(d => {
+      const date = new Date(d + 'T00:00:00');
+      const label = d === t ? 'Сегодня' : date.getDate() + ' апр';
+      const active = d === currentLogDate;
+      const done = isDayComplete(d);
+      return `<div onclick="selectLogDay('${d}')" style="flex-shrink:0;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.15s;background:${active ? 'var(--green)' : 'transparent'};color:${active ? '#0f0f0f' : done ? 'var(--green)' : 'var(--muted)'};">${label}${done && !active ? ' ✓' : ''}</div>`;
+    }).join('');
+  }
+
+  state.tempLog = JSON.parse(JSON.stringify(state.log[currentLogDate] || {}));
+  const titleEl = document.getElementById('log-screen-title');
+  if (titleEl) titleEl.textContent = currentLogDate === today() ? 'Тренировка' : 'За ' + new Date(currentLogDate + 'T00:00:00').getDate() + ' апреля';
   const target = getTarget();
   const list = document.getElementById('log-exercise-list');
 
@@ -1638,7 +1688,7 @@ async function syncToServer() {
 }
 
 async function saveLog() {
-  const t = today();
+  const t = currentLogDate;
   state.log[t] = JSON.parse(JSON.stringify(state.tempLog));
   await saveState();
   syncToServer();
