@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Рейтинг — Челлендж Сотка</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Manrope:wght@400;500;600;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    height: 100%;
+    background: #0f0f0f;
+    color: #f0f0f0;
+    font-family: 'Manrope', sans-serif;
+    overscroll-behavior: none;
+  }
+
+  .app { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+
+  .header {
+    background: #c8f035;
+    padding: 24px 20px 20px;
+  }
+
+  .header-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: #0f0f0f;
+    letter-spacing: -0.5px;
+  }
+
+  .header-sub {
+    font-size: 12px;
+    color: rgba(0,0,0,0.5);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  .tabs {
+    display: flex;
+    background: #1a1a1a;
+    border-bottom: 0.5px solid #2e2e2e;
+    padding: 0 16px;
+    gap: 4px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 12px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #666;
+    text-align: center;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .tab.active {
+    color: #c8f035;
+    border-bottom-color: #c8f035;
+  }
+
+  .content { flex: 1; overflow-y: auto; padding-bottom: 20px; }
+  .content::-webkit-scrollbar { display: none; }
+
+  .loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+    font-size: 14px;
+  }
+
+  .my-rank {
+    margin: 12px 16px;
+    background: rgba(200,240,53,0.1);
+    border: 1px solid #c8f035;
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .my-rank-num {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: #c8f035;
+    min-width: 36px;
+  }
+
+  .my-rank-info { flex: 1; }
+
+  .my-rank-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #f0f0f0;
+  }
+
+  .my-rank-val {
+    font-size: 12px;
+    color: #888;
+    margin-top: 2px;
+  }
+
+  .list { padding: 0 16px; display: flex; flex-direction: column; gap: 6px; }
+
+  .row {
+    background: #1a1a1a;
+    border: 0.5px solid #2e2e2e;
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: background 0.1s;
+  }
+
+  .row.me {
+    background: rgba(200,240,53,0.07);
+    border-color: rgba(200,240,53,0.4);
+  }
+
+  .row.top1 { border-color: #FFD700; background: rgba(255,215,0,0.06); }
+  .row.top2 { border-color: #C0C0C0; background: rgba(192,192,192,0.05); }
+  .row.top3 { border-color: #CD7F32; background: rgba(205,127,50,0.05); }
+
+  .rank-num {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #555;
+    min-width: 28px;
+    text-align: center;
+  }
+
+  .row.top1 .rank-num { color: #FFD700; font-size: 18px; }
+  .row.top2 .rank-num { color: #C0C0C0; font-size: 16px; }
+  .row.top3 .rank-num { color: #CD7F32; font-size: 15px; }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #242424;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #c8f035;
+    flex-shrink: 0;
+  }
+
+  .row-info { flex: 1; min-width: 0; }
+
+  .row-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #f0f0f0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .row-sub {
+    font-size: 11px;
+    color: #666;
+    margin-top: 2px;
+  }
+
+  .row-val {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #c8f035;
+    flex-shrink: 0;
+  }
+
+  .row-unit {
+    font-size: 9px;
+    color: #555;
+    font-weight: 600;
+    text-align: right;
+    margin-top: 2px;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #444;
+    padding: 14px 16px 6px;
+  }
+
+  .updated {
+    text-align: center;
+    font-size: 10px;
+    color: #333;
+    padding: 16px;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-title">🏆 Рейтинг</div>
+    <div class="header-sub">Челлендж Сотка · Апрель 2026</div>
+  </div>
+
+  <div style="padding: 12px 16px 4px; display:flex; gap:16px;">
+    <div style="flex:1; background:#1a1a1a; border:0.5px solid #2e2e2e; border-radius:10px; padding:10px 12px; text-align:center;">
+      <div style="font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#555;margin-bottom:3px;">Главный</div>
+      <div style="font-size:11px;font-weight:700;color:#c8f035;">Повторения</div>
+    </div>
+    <div style="flex:1; background:#1a1a1a; border:0.5px solid #2e2e2e; border-radius:10px; padding:10px 12px; text-align:center;">
+      <div style="font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#555;margin-bottom:3px;">При равных</div>
+      <div style="font-size:11px;font-weight:700;color:#888;">Дни</div>
+    </div>
+    <div style="flex:1; background:#1a1a1a; border:0.5px solid #2e2e2e; border-radius:10px; padding:10px 12px; text-align:center;">
+      <div style="font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#555;margin-bottom:3px;">При равных</div>
+      <div style="font-size:11px;font-weight:700;color:#888;">Серия</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="loading" id="loading">Загружаем таблицу...</div>
+    <div id="my-rank-block" style="display:none;"></div>
+    <div class="section-label" id="list-label" style="display:none;">Все участники</div>
+    <div class="list" id="list"></div>
+    <div class="updated" id="updated"></div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://waqyjqmsctcbfvhpnfjy.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_qkEd2CnHrCeIUZXMSA9AVw_1tRK0nzo';
+
+let allParticipants = [];
+let myUserId = null;
+
+const TG = window.Telegram && window.Telegram.WebApp;
+if (TG) { TG.ready(); TG.expand(); }
+
+const tgUser = TG && TG.initDataUnsafe && TG.initDataUnsafe.user;
+if (tgUser) myUserId = String(tgUser.id);
+
+async function loadData() {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/participants?select=tg_user_id,tg_username,tg_first_name,total_reps,days_done,streak`, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      }
+    });
+    allParticipants = await res.json();
+    render();
+    document.getElementById('updated').textContent = 'Обновлено: ' + new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  } catch(e) {
+    document.getElementById('loading').textContent = 'Ошибка загрузки. Попробуй позже.';
+  }
+}
+
+function getName(p) {
+  if (p.tg_first_name) return p.tg_first_name;
+  if (p.tg_username) return '@' + p.tg_username;
+  return 'Участник';
+}
+
+function getInitial(p) {
+  const name = getName(p);
+  return name.replace('@', '').charAt(0).toUpperCase();
+}
+
+function render() {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('list-label').style.display = 'block';
+
+  // Sort: 1) total_reps desc, 2) days_done desc, 3) streak desc
+  const sorted = [...allParticipants].sort((a, b) => {
+    if ((b.total_reps || 0) !== (a.total_reps || 0)) return (b.total_reps || 0) - (a.total_reps || 0);
+    if ((b.days_done || 0) !== (a.days_done || 0)) return (b.days_done || 0) - (a.days_done || 0);
+    return (b.streak || 0) - (a.streak || 0);
+  });
+
+  const myIdx = sorted.findIndex(p => String(p.tg_user_id) === myUserId);
+  const myRankBlock = document.getElementById('my-rank-block');
+
+  if (myIdx >= 3) {
+    const me = sorted[myIdx];
+    myRankBlock.style.display = 'block';
+    myRankBlock.innerHTML = `
+      <div class="my-rank">
+        <div class="my-rank-num">#${myIdx + 1}</div>
+        <div class="my-rank-info">
+          <div class="my-rank-name">Ты · ${getName(me)}</div>
+          <div class="my-rank-val">${me.total_reps || 0} повт. · ${me.days_done || 0} дней · серия ${me.streak || 0}</div>
+        </div>
+      </div>`;
+  } else {
+    myRankBlock.style.display = 'none';
+  }
+
+  const medals = ['🥇', '🥈', '🥉'];
+  const topClasses = ['top1', 'top2', 'top3'];
+
+  document.getElementById('list').innerHTML = sorted.map((p, i) => {
+    const isMe = String(p.tg_user_id) === myUserId;
+    const rankDisplay = i < 3 ? medals[i] : i + 1;
+    const cls = [i < 3 ? topClasses[i] : '', isMe ? 'me' : ''].filter(Boolean).join(' ');
+
+    return `<div class="row ${cls}">
+      <div class="rank-num">${rankDisplay}</div>
+      <div class="avatar">${getInitial(p)}</div>
+      <div class="row-info">
+        <div class="row-name">${getName(p)}${isMe ? ' 👈' : ''}</div>
+        <div class="row-sub">${p.days_done || 0} дн. · серия ${p.streak || 0}</div>
+      </div>
+      <div>
+        <div class="row-val">${p.total_reps || 0}</div>
+        <div class="row-unit">повт.</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+loadData();
+setInterval(loadData, 60000);
+</script>
+</body>
+</html>
