@@ -1088,9 +1088,9 @@
         </div>
       </div>
 
-      <div style="padding:0 16px 24px;font-size:11px;color:#444;text-align:center;line-height:1.6;">
-        Тренер: <span style="color:var(--green);font-weight:600;">@egors86</span><br>
-        egorzdorov.ru
+      <div style="padding:0 16px 24px;text-align:center;line-height:1.8;">
+        <div style="font-size:13px;color:var(--muted);font-weight:500;">Твой тренер: <span style="color:var(--text);font-weight:700;">Егор Ступин</span></div>
+        <a href="https://egorzdorov.ru" target="_blank" style="display:inline-block;margin-top:4px;font-size:12px;color:var(--green);font-weight:600;text-decoration:none;border:1px solid var(--green);border-radius:20px;padding:3px 12px;">egorzdorov.ru</a>
       </div>
     </div>
   </div>
@@ -1480,7 +1480,8 @@ function renderHome() {
     card.innerHTML = `<div style="padding:24px;text-align:center;color:var(--muted);font-size:14px;font-weight:600;">🌙 День отдыха. Восстанавливайся!</div>`;
     document.getElementById('log-btn').style.display = 'none';
   } else {
-    card.innerHTML = exIds.map(id => {
+    const sortedExIds = [...exIds].sort((a, b) => (todayLog[b] || 0) - (todayLog[a] || 0));
+    card.innerHTML = sortedExIds.map(id => {
       const ex = EXERCISES.find(e => e.id === id);
       const done = (todayLog[id] || 0) >= target;
       return `<div class="today-ex" onclick="goTo('log')">
@@ -1629,7 +1630,8 @@ function renderLog() {
   const target = getTarget();
   const list = document.getElementById('log-exercise-list');
 
-  list.innerHTML = state.selectedExercises.map(id => {
+  const sortedLogIds = [...state.selectedExercises].sort((a, b) => (state.tempLog[b] || 0) - (state.tempLog[a] || 0));
+  list.innerHTML = sortedLogIds.map(id => {
     const ex = EXERCISES.find(e => e.id === id);
     const val = state.tempLog[id] || 0;
     const pct = Math.min(100, Math.round((val / target) * 100));
