@@ -1723,7 +1723,7 @@ async function saveLog() {
   const t = currentLogDate;
   state.log[t] = JSON.parse(JSON.stringify(state.tempLog));
   await saveState();
-  syncToServer();
+  await syncToServer();
   checkNewBadges();
   showToast('Тренировка сохранена!');
   setTimeout(() => goTo('home'), 800);
