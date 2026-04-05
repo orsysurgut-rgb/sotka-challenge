@@ -17,10 +17,9 @@ export default async function handler(req, res) {
     // Подсчёт статистики
     const days_done = Object.keys(log || {}).filter(date => {
       const dayLog = log[date];
-      const total = Object.values(dayLog).reduce((s, v) => s + v, 0);
       return challenge_type === 'sotka'
         ? Object.values(dayLog).some(v => v >= 100)
-        : total >= 34;
+        : Object.values(dayLog).reduce((s, v) => s + v, 0) >= 34;
     }).length;
 
     const total_reps = Object.values(log || {}).reduce((sum, dayLog) => {
@@ -41,34 +40,75 @@ export default async function handler(req, res) {
       else break;
     }
 
-    // Upsert в Supabase
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/participants`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Prefer': 'resolution=merge-duplicates'
-      },
-      body: JSON.stringify({
-        tg_user_id: String(tg_user_id),
-        tg_username: tg_username || null,
-        tg_first_name: tg_first_name || null,
-        challenge_type: challenge_type || 'sotka',
-        selected_exercises: selected_exercises || [],
-        start_date: start_date || null,
-        log: log || {},
-        total_reps,
-        days_done,
-        streak,
-        last_active: today,
-        updated_at: new Date().toISOString()
-      })
-    });
+    const today_iso = new Date().toISOString();
 
-    if (!response.ok) {
-      const err = await response.text();
-      return res.status(500).json({ error: err });
+    // Сначала пробуем UPDATE существующей записи
+    const updateResponse = await fetch(
+      `${SUPABASE_URL}/rest/v1/participants?tg_user_id=eq.${encodeURIComponent(String(tg_user_id))}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({
+          tg_username: tg_username || null,
+          tg_first_name: tg_first_name || null,
+          challenge_type: challenge_type || 'sotka',
+          selected_exercises: selected_exercises || [],
+          start_date: start_date || null,
+          log: log || {},
+          total_reps,
+          days_done,
+          streak,
+          last_active: today,
+          updated_at: today_iso
+        })
+      }
+    );
+
+    if (!updateResponse.ok) {
+      const err = await updateResponse.text();
+      return res.status(500).json({ error: 'PATCH failed: ' + err });
+    }
+
+    const updated = await updateResponse.json();
+
+    // Если запись не найдена — создаём новую
+    if (!updated || updated.length === 0) {
+      const insertResponse = await fetch(
+        `${SUPABASE_URL}/rest/v1/participants`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Prefer': 'return=representation'
+          },
+          body: JSON.stringify({
+            tg_user_id: String(tg_user_id),
+            tg_username: tg_username || null,
+            tg_first_name: tg_first_name || null,
+            challenge_type: challenge_type || 'sotka',
+            selected_exercises: selected_exercises || [],
+            start_date: start_date || null,
+            log: log || {},
+            total_reps,
+            days_done,
+            streak,
+            last_active: today,
+            updated_at: today_iso
+          })
+        }
+      );
+
+      if (!insertResponse.ok) {
+        const err = await insertResponse.text();
+        return res.status(500).json({ error: 'INSERT failed: ' + err });
+      }
     }
 
     return res.status(200).json({ ok: true, days_done, total_reps, streak });
