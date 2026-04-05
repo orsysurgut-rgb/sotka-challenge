@@ -1703,7 +1703,11 @@ async function syncToServer() {
   try {
     const tg = window.Telegram && window.Telegram.WebApp;
     const user = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
-    await fetch('/api/track', {
+    
+    // Сначала загружаем актуальный state из CloudStorage
+    await loadState();
+    
+    const response = await fetch('/api/track', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1716,8 +1720,20 @@ async function syncToServer() {
         log: state.log
       })
     });
-  } catch(e) {}
+    
+    if (!response.ok) {
+      const err = await response.text();
+      console.error('Sync error:', err);
+    } else {
+      const data = await response.json();
+      console.log('Sync ok:', data);
+    }
+    
+  } catch(e) {
+    console.error('syncToServer failed:', e);
+  }
 }
+
 
 async function saveLog() {
   const t = currentLogDate;
