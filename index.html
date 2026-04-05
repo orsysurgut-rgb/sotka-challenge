@@ -1705,7 +1705,7 @@ async function syncToServer() {
     const user = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
     
     // Сначала загружаем актуальный state из CloudStorage
-    await loadState();
+   // await loadState();
     
     const response = await fetch('/api/track', {
       method: 'POST',
