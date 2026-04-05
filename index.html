@@ -39,11 +39,9 @@
     flex-direction: column;
   }
 
-  /* SCREENS */
   .screen { display: none; flex-direction: column; flex: 1; }
   .screen.active { display: flex; }
 
-  /* ====== HOME SCREEN ====== */
   .home-header {
     background: var(--green);
     padding: 28px 20px 24px;
@@ -93,7 +91,6 @@
     font-weight: 500;
   }
 
-  /* Stats row */
   .stats-row {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -126,7 +123,6 @@
     letter-spacing: 0.06em;
   }
 
-  /* Progress ring */
   .progress-section {
     padding: 4px 16px 16px;
     display: flex;
@@ -147,7 +143,6 @@
   }
 
   .ring-wrap svg { transform: rotate(-90deg); }
-
   .ring-bg { fill: none; stroke: var(--border); stroke-width: 6; }
   .ring-fill { fill: none; stroke: var(--green); stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
 
@@ -190,7 +185,6 @@
     line-height: 1.5;
   }
 
-  /* Today section */
   .section-label {
     font-size: 11px;
     font-weight: 700;
@@ -271,7 +265,6 @@
   .ex-check svg { display: none; }
   .ex-check.done svg { display: block; }
 
-  /* CTA Button */
   .cta-btn {
     margin: 14px 16px;
     background: var(--green);
@@ -290,7 +283,6 @@
 
   .cta-btn:active { opacity: 0.85; transform: scale(0.98); }
 
-  /* ====== CALENDAR SCREEN ====== */
   .screen-header {
     padding: 20px 16px 12px;
     display: flex;
@@ -361,7 +353,6 @@
     color: #444;
   }
 
-  /* Legend */
   .legend {
     display: flex;
     gap: 8px;
@@ -385,7 +376,6 @@
     border-radius: 3px;
   }
 
-  /* Exercise breakdown in calendar */
   .ex-breakdown {
     margin: 0 16px;
     background: var(--surface);
@@ -427,7 +417,6 @@
     font-weight: 500;
   }
 
-  /* ====== LOG SCREEN ====== */
   .log-exercise-list {
     padding: 0 16px;
     display: flex;
@@ -472,7 +461,6 @@
     margin-top: 2px;
   }
 
-  /* Counter */
   .counter-row {
     display: flex;
     align-items: center;
@@ -544,7 +532,6 @@
   .save-all-btn:active { opacity: 0.85; }
   .save-all-btn:disabled { opacity: 0.3; cursor: default; }
 
-  /* ====== SETTINGS SCREEN ====== */
   .settings-section {
     margin: 0 16px 16px;
     background: var(--surface);
@@ -626,7 +613,6 @@
     font-weight: 600;
   }
 
-  /* Exercise selector */
   .ex-selector {
     padding: 0 16px 16px;
     display: flex;
@@ -695,7 +681,6 @@
 
   .start-btn:active { opacity: 0.85; }
 
-  /* ====== BOTTOM NAV ====== */
   .bottom-nav {
     position: sticky;
     bottom: 0;
@@ -741,7 +726,6 @@
   .nav-item.active .nav-label { color: var(--green); }
   .nav-item.active svg path, .nav-item.active svg circle, .nav-item.active svg rect { stroke: var(--green); }
 
-  /* Scrollable content */
   .scroll-content {
     flex: 1;
     overflow-y: auto;
@@ -749,7 +733,6 @@
     padding-bottom: 12px;
   }
 
-  /* Toast */
   .toast {
     position: fixed;
     bottom: 80px;
@@ -809,9 +792,7 @@
     background: rgba(200,240,53,0.06);
   }
 
-  .badge-card.locked {
-    opacity: 0.45;
-  }
+  .badge-card.locked { opacity: 0.45; }
 
   .badge-emoji {
     font-size: 28px;
@@ -851,6 +832,95 @@
     position: absolute;
     top: 4px;
     right: 4px;
+  }
+
+  /* VIDEO ACCORDION */
+  .video-row {
+    border-bottom: 0.5px solid var(--border);
+  }
+  .video-row:last-child { border-bottom: none; }
+
+  .video-row-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .video-row-header:active { background: var(--surface2); }
+
+  .video-arrow {
+    transition: transform 0.3s;
+    flex-shrink: 0;
+  }
+  .video-arrow.open { transform: rotate(180deg); }
+
+  .video-block {
+    display: none;
+    padding: 0 16px 16px;
+  }
+  .video-block.open { display: block; }
+
+  .video-wrap {
+    background: var(--surface2);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .video-wrap video {
+    width: 100%;
+    display: block;
+    max-height: 420px;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+
+  .video-play-btn {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: rgba(0,0,0,0.35);
+    border-radius: 12px;
+    transition: background 0.2s;
+  }
+  .video-play-btn:active { background: rgba(0,0,0,0.5); }
+
+  .video-play-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--green);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .video-loading {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.5);
+    border-radius: 12px;
+  }
+  .video-loading.show { display: flex; }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  .spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba(200,240,53,0.3);
+    border-top-color: var(--green);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
   }
 </style>
 </head>
@@ -910,7 +980,6 @@
 
       <div class="section-label">Сегодня</div>
       <div class="today-card" id="today-card"></div>
-
       <button class="cta-btn" id="log-btn" onclick="goTo('log')">Отметить тренировку</button>
     </div>
   </div>
@@ -921,37 +990,6 @@
       <div class="screen-header">
         <div class="screen-title">Прогресс</div>
       </div>
-
-      <!-- Кнопка Рейтинг -->
-        <div style="padding: 0 16px 12px;">
-          <button onclick="window.location.href='leaderboard.html'" style="
-            width: 100%;
-            background: transparent;
-            border: 1.5px solid #c8f035;
-            border-radius: 16px;
-            padding: 14px 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: all 0.15s;
-          ">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <path d="M4 17V10M8 17V6M12 17v-4M16 17V8M20 17V4" stroke="#c8f035" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-            <span style="
-              font-family: 'Unbounded', sans-serif;
-              font-size: 13px;
-              font-weight: 700;
-              color: #c8f035;
-              letter-spacing: -0.3px;
-            ">🏆 Рейтинг участников</span>
-            <svg style="margin-left:auto;" width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M6 4l4 4-4 4" stroke="#c8f035" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-          </button>
-        </div>
-      
       <div class="cal-week-labels">
         <div class="cal-wl">пн</div>
         <div class="cal-wl">вт</div>
@@ -962,9 +1000,7 @@
         <div class="cal-wl">вс</div>
       </div>
       <div class="calendar-grid" id="calendar-grid"></div>
-
       <div class="legend" id="calendar-legend"></div>
-
       <div class="section-label">Упражнения</div>
       <div class="ex-breakdown" id="ex-breakdown"></div>
     </div>
@@ -1026,7 +1062,6 @@
         <div style="font-size:11px;color:#555;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;text-align:center;">Опасная зона</div>
         <button onclick="resetStep1()" style="width:100%;background:transparent;border:0.5px solid #3a1a1a;border-radius:var(--radius);padding:14px;font-family:Manrope,sans-serif;font-size:13px;font-weight:600;color:#ff4444;cursor:pointer;">Сбросить прогресс</button>
       </div>
-
       <div style="height:20px;"></div>
     </div>
   </div>
@@ -1044,12 +1079,13 @@
     </div>
   </div>
 
-  <!-- HELP SCREEN -->
+  <!-- HELP -->
   <div class="screen" id="screen-help">
     <div class="scroll-content">
       <div class="screen-header">
         <div class="screen-title">Помощь</div>
       </div>
+
       <div class="section-label">Подписывайся</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 16px;">
         <a href="https://t.me/+VWvBsueoT4ZjM2Fi" target="_blank" style="text-decoration:none;">
@@ -1087,17 +1123,39 @@
       </div>
 
       <div class="section-label">Правила челленджа</div>
-      <div style="margin:0 16px 16px;background:var(--surface);border-radius:var(--radius);border:0.5px solid var(--border);padding:18px;">
-        <div style="font-size:13.5px;color:#c8c8c8;line-height:1.8;">
-          <div style="margin-bottom:12px;">📌 <strong style="color:var(--text);">Сотка</strong> — 100 повторений в день, 30 дней подряд.</div>
-          <div style="margin-bottom:12px;">📌 <strong style="color:var(--text);">Тысяча</strong> — 1000 повторений за месяц (~33 в день). Открывается после завершения Сотки.</div>
-          <div style="margin-bottom:12px;">📌 Выбирай <strong style="color:var(--text);">любое упражнение</strong> из списка каждый день. Можно каждый день одно, можно чередовать.</div>
-          <div style="margin-bottom:12px;">📌 Объём <strong style="color:var(--text);">набираешь за день</strong>, не обязательно за один подход.</div>
-          <div style="margin-bottom:0px;">📌 7 упражнений на 7 дней недели — <strong style="color:var(--text);">полное тело без пропусков</strong>.</div>
-        </div>
-      </div>
+<div style="margin:0 16px 16px;background:var(--surface);border-radius:var(--radius);border:0.5px solid var(--border);padding:18px;">
+  <div style="font-size:13.5px;color:#c8c8c8;line-height:1.8;">
 
-      <div class="section-label">Упражнения</div>
+    <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:5px;box-shadow:0 0 6px rgba(200,240,53,0.5);"></div>
+      <div><strong style="color:var(--text);">Сотка</strong> · 100 повторений в день, 30 дней подряд.</div>
+    </div>
+
+    <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:5px;box-shadow:0 0 6px rgba(200,240,53,0.5);"></div>
+      <div>Выбирай <strong style="color:var(--text);">любое упражнение</strong> из списка каждый день. Можно каждый день одно, можно чередовать.</div>
+    </div>
+
+    <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:5px;box-shadow:0 0 6px rgba(200,240,53,0.5);"></div>
+      <div>Объём <strong style="color:var(--text);">набираешь за день</strong>, не обязательно за один подход.</div>
+    </div>
+
+    <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:5px;box-shadow:0 0 6px rgba(200,240,53,0.5);"></div>
+      <div>7 упражнений на 7 дней недели · <strong style="color:var(--text);">полное тело без пропусков</strong>.</div>
+    </div>
+
+    <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:0;">
+      <div style="width:8px;height:8px;border-radius:2px;background:transparent;border:1.5px solid #444;flex-shrink:0;margin-top:5px;"></div>
+      <div style="color:#666;"><strong style="color:#555;">Тысяча</strong> · 1000 повторений за месяц (~33 в день). Открывается после завершения Сотки.</div>
+    </div>
+
+  </div>
+</div>
+
+
+      <div class="section-label">Упражнения и техника</div>
       <div style="margin:0 16px 16px;background:var(--surface);border-radius:var(--radius);border:0.5px solid var(--border);overflow:hidden;">
         <div id="help-exercises-list"></div>
       </div>
@@ -1128,7 +1186,7 @@
   <!-- RESET MODAL -->
   <div id="reset-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:100;align-items:flex-end;justify-content:center;">
     <div style="background:#1a1a1a;border-radius:20px 20px 0 0;padding:28px 20px 36px;width:100%;max-width:480px;border-top:0.5px solid #2e2e2e;">
-      <div id="reset-step1" >
+      <div id="reset-step1">
         <div style="font-size:22px;text-align:center;margin-bottom:12px;">⚠️</div>
         <div style="font-family:Unbounded,sans-serif;font-size:16px;font-weight:700;color:#f0f0f0;text-align:center;margin-bottom:10px;">Сбросить прогресс?</div>
         <div style="font-size:13px;color:#888;text-align:center;line-height:1.6;margin-bottom:24px;">Все твои данные за текущий челлендж будут удалены. Это действие нельзя отменить.</div>
@@ -1186,7 +1244,6 @@
       <div class="nav-label">Награды</div>
       <div class="badges-nav-dot" id="badges-nav-dot" style="display:none;"></div>
     </button>
-
     <button class="nav-item" id="nav-settings" onclick="goTo('settings')">
       <div class="nav-icon">
         <svg width="20" height="20" viewBox="0 0 22 22" fill="none">
@@ -1203,49 +1260,13 @@
 
 <script>
 const EXERCISE_ICONS = {
-  pushups: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c8f035" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="17" cy="4" r="2"/>
-    <path d="M3 14h4l2 4h2l2-8 2 3h4"/>
-    <path d="M5 14v4"/>
-  </svg>`,
-  pullups: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c8f035" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M3 5h18"/>
-    <circle cx="12" cy="9" r="2"/>
-    <path d="M10 11v5l-2 4M14 11v5l2 4"/>
-    <path d="M10 13h4"/>
-  </svg>`,
-  squats: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c8f035" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="4" r="2"/>
-    <path d="M12 6v5l-4 5v4M12 11l4 5v4"/>
-    <path d="M8 20h2M14 20h2"/>
-  </svg>`,
-  dips: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c8f035" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M5 6v10M19 6v10"/>
-    <path d="M3 6h4M17 6h4"/>
-    <circle cx="12" cy="5" r="2"/>
-    <path d="M10 7v6l-1 5M14 7v6l1 5"/>
-    <path d="M9 18h6"/>
-  </svg>`,
-  crunches: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c8f035" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="12" cy="4" r="2"/>
-    <path d="M5 20h4l3-7 3 7h4"/>
-    <path d="M9 13c2-1 4-1 6 0"/>
-    <path d="M7 20v-3M17 20v-3"/>
-  </svg>`,
-  kneeraise: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c8f035" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M8 3h8"/>
-    <path d="M10 3v3M14 3v3"/>
-    <circle cx="12" cy="9" r="2"/>
-    <path d="M10 11v3l-3 4M14 11v3l3 4"/>
-    <path d="M9 14l6 0"/>
-    <path d="M11 14l-1 3M13 14l1 3"/>
-  </svg>`,
-  lunges: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c8f035" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="13" cy="4" r="2"/>
-    <path d="M13 6v5l4 5v4"/>
-    <path d="M13 11l-5 3v6"/>
-    <path d="M8 20h4M15 20h4"/>
-  </svg>`,
+  pushups: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c8f035" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="17" cy="4" r="2"/><path d="M3 14h4l2 4h2l2-8 2 3h4"/><path d="M5 14v4"/></svg>`,
+  pullups: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c8f035" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18"/><circle cx="12" cy="9" r="2"/><path d="M10 11v5l-2 4M14 11v5l2 4"/><path d="M10 13h4"/></svg>`,
+  squats: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c8f035" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><path d="M12 6v5l-4 5v4M12 11l4 5v4"/><path d="M8 20h2M14 20h2"/></svg>`,
+  dips: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c8f035" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6v10M19 6v10"/><path d="M3 6h4M17 6h4"/><circle cx="12" cy="5" r="2"/><path d="M10 7v6l-1 5M14 7v6l1 5"/><path d="M9 18h6"/></svg>`,
+  crunches: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c8f035" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><path d="M5 20h4l3-7 3 7h4"/><path d="M9 13c2-1 4-1 6 0"/><path d="M7 20v-3M17 20v-3"/></svg>`,
+  kneeraise: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c8f035" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h8"/><path d="M10 3v3M14 3v3"/><circle cx="12" cy="9" r="2"/><path d="M10 11v3l-3 4M14 11v3l3 4"/><path d="M9 14l6 0"/><path d="M11 14l-1 3M13 14l1 3"/></svg>`,
+  lunges: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c8f035" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M13 6v5l4 5v4"/><path d="M13 11l-5 3v6"/><path d="M8 20h4M15 20h4"/></svg>`,
 };
 
 const EXERCISES = [
@@ -1258,7 +1279,16 @@ const EXERCISES = [
   { id: 'lunges',    name: 'Выпады',                target: 100 },
 ];
 
-// Storage: Telegram CloudStorage with localStorage fallback
+const EXERCISE_VIDEOS = {
+  pushups:   'BAACAgIAAxkBAAN7adLLO_NnQHxKK4aGNvlTjmE1sWkAAtSmAAJt75hK29jlBJenGxM7BA',
+  pullups:   'BAACAgIAAxkBAAN8adLMW_w0JFMgWwr_8w5c9DKxtOUAAtimAAJt75hKrZ4S6sSTeZs7BA',
+  squats:    'BAACAgIAAxkBAAN9adLMq5v8H2Ufuq3ALaFlZ8INghEAAtmmAAJt75hK0qwgZQ4Zr6M7BA',
+  dips:      'BAACAgIAAxkBAAN-adLM0AvJmb80OxJ4PWhaUys0h1EAAtqmAAJt75hKWoO1hvgOQmk7BA',
+  crunches:  'BAACAgIAAxkBAAN_adLNCiGXxQvcyvi7meqSGqL8ljAAAtumAAJt75hKegzVHDLyIl87BA',
+  kneeraise: 'BAACAgIAAxkBAAOAadLNQdivWlm-Oaf67iJn52-MrC4AAtymAAJt75hK81h0fPVn0po7BA',
+  lunges:    'BAACAgIAAxkBAAOBadLNlBlR5xJbxP2T51AuQZxlrZQAAt2mAAJt75hKXKIGQreN77c7BA',
+};
+
 const TG = window.Telegram && window.Telegram.WebApp;
 const CS = TG && TG.CloudStorage;
 
@@ -1283,7 +1313,6 @@ function storageSet(key, value) {
   });
 }
 
-// State
 let state = {
   challengeType: 'sotka',
   selectedExercises: ['pushups','pullups','squats','dips','crunches','kneeraise','lunges'],
@@ -1320,11 +1349,7 @@ function dateLabel(dateStr) {
   return d.getDate();
 }
 
-function isRestDay(dateStr) {
-  const d = new Date(dateStr + 'T00:00:00');
-  const dow = d.getDay();
-  return dow === 0 || dow === 6;
-}
+function isRestDay(dateStr) { return false; }
 
 function getDaysBetween(start, end) {
   const s = new Date(start + 'T00:00:00');
@@ -1340,8 +1365,6 @@ function getChallengeDays() {
   }
   return days;
 }
-
-function isRestDay(dateStr) { return false; }
 
 function getTodayExercises() {
   return state.selectedExercises;
@@ -1397,7 +1420,6 @@ function getTotalReps() {
   return total;
 }
 
-// Navigation
 let currentScreen = 'home';
 
 function goTo(screen) {
@@ -1406,7 +1428,10 @@ function goTo(screen) {
   document.getElementById('screen-' + screen).classList.add('active');
   const navEl = document.getElementById('nav-' + screen);
   if (navEl) navEl.classList.add('active');
-  else { const settingsNav = document.getElementById('nav-settings'); if(settingsNav) settingsNav.classList.add('active'); }
+  else {
+    const settingsNav = document.getElementById('nav-settings');
+    if(settingsNav) settingsNav.classList.add('active');
+  }
   currentScreen = screen;
   if (screen === 'home') renderHome();
   if (screen === 'calendar') renderCalendar();
@@ -1414,10 +1439,8 @@ function goTo(screen) {
   if (screen === 'settings') renderSettings();
   if (screen === 'badges') renderBadges();
   if (screen === 'help') renderHelp();
-  if (screen === 'help') renderHelp();
 }
 
-// HOME
 function renderHome() {
   const allDays = getChallengeDays();
   const t = today();
@@ -1471,14 +1494,6 @@ function renderHome() {
     ['Ты сделал это', 'Тридцать дней. Ты другой человек. Это навсегда.'],
   ];
 
-  // Текущий день челленджа (сколько дней прошло с 1 апреля)
-  const nowLocal = new Date();
-  const startD = new Date(2026, 3, 1); // April 1 local time
-  const nowMidnight = new Date(nowLocal.getFullYear(), nowLocal.getMonth(), nowLocal.getDate());
-  const challengeDay = Math.max(0, Math.min(29, Math.floor((nowMidnight - startD) / 86400000)));
-  const todayComplete = isDayComplete(today());
-  let title, desc;
-
   const motivate = [
     'Осталось совсем немного до выполнения нормы. Вперёд.',
     'День не закрыт. Сделай свои 100 прямо сейчас.',
@@ -1487,15 +1502,10 @@ function renderHome() {
     'Сегодняшний день ещё можно сделать победным.',
   ];
 
-  // doneDays = calendar day (1=April 1, 2=April 2, etc)
-  // PHRASES[0] = before start, PHRASES[1] = day 1, PHRASES[2] = day 2...
   const phraseIdx = Math.min(doneDays, PHRASES.length - 1);
-  title = PHRASES[phraseIdx][0];
-  if (todayComplete) {
-    desc = PHRASES[phraseIdx][1];
-  } else {
-    desc = motivate[doneDays % motivate.length];
-  }
+  const todayComplete = isDayComplete(today());
+  const title = PHRASES[phraseIdx][0];
+  const desc = todayComplete ? PHRASES[phraseIdx][1] : motivate[doneDays % motivate.length];
 
   document.getElementById('progress-title').textContent = title;
   document.getElementById('progress-desc').textContent = desc;
@@ -1531,12 +1541,11 @@ function renderHome() {
   }
 }
 
-// CALENDAR
 function renderCalendar() {
   const days = getChallengeDays();
   const t = today();
   const start = new Date('2026-04-01T00:00:00');
-  const startDow = (start.getDay() + 6) % 7; // Wednesday = 2
+  const startDow = (start.getDay() + 6) % 7;
 
   const grid = document.getElementById('calendar-grid');
   let html = '';
@@ -1558,7 +1567,6 @@ function renderCalendar() {
 
   grid.innerHTML = html;
 
-  // Exercise totals
   const exTotals = {};
   state.selectedExercises.forEach(id => exTotals[id] = 0);
   Object.values(state.log).forEach(dayLog => {
@@ -1566,12 +1574,6 @@ function renderCalendar() {
       if (exTotals[id] !== undefined) exTotals[id] += dayLog[id];
     });
   });
-
-  const maxPossible = state.challengeType === 'sotka'
-    ? Object.keys(state.log).filter(d => !isRestDay(d)).length * 100
-    : 1000;
-
-  const maxPossibleReps = state.challengeType === 'sotka' ? 3000 : 1000;
 
   const doneLegend = days.filter(d => isDayComplete(d)).length;
   const aheadLegend = days.filter(d => d > t).length;
@@ -1629,7 +1631,6 @@ function renderCalendar() {
   if (lastEl) lastEl.style.borderBottom = 'none';
 }
 
-// LOG
 let currentLogDate = today();
 
 function selectLogDay(date) {
@@ -1638,7 +1639,6 @@ function selectLogDay(date) {
 }
 
 function renderLog() {
-  // Build day selector - last 7 days that are within challenge
   const days = getChallengeDays();
   const t = today();
   const pastDays = days.filter(d => d <= t).slice(-7).reverse();
@@ -1703,11 +1703,7 @@ async function syncToServer() {
   try {
     const tg = window.Telegram && window.Telegram.WebApp;
     const user = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
-    
-    // Сначала загружаем актуальный state из CloudStorage
-   // await loadState();
-    
-    const response = await fetch('/api/track', {
+    await fetch('/api/track', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1720,32 +1716,19 @@ async function syncToServer() {
         log: state.log
       })
     });
-    
-    if (!response.ok) {
-      const err = await response.text();
-      console.error('Sync error:', err);
-    } else {
-      const data = await response.json();
-      console.log('Sync ok:', data);
-    }
-    
-  } catch(e) {
-    console.error('syncToServer failed:', e);
-  }
+  } catch(e) {}
 }
-
 
 async function saveLog() {
   const t = currentLogDate;
   state.log[t] = JSON.parse(JSON.stringify(state.tempLog));
   await saveState();
-  await syncToServer();
+  syncToServer();
   checkNewBadges();
   showToast('Тренировка сохранена!');
   setTimeout(() => goTo('home'), 800);
 }
 
-// SETTINGS
 function renderSettings() {
   const ctSotka = document.getElementById('ct-sotka');
   const ctTysyacha = document.getElementById('ct-tysyacha');
@@ -1756,7 +1739,7 @@ function renderSettings() {
   } else {
     ctTysyacha.classList.add('selected');
     ctSotka.classList.remove('selected');
-    document.getElementById('target-info').innerHTML = `Тысяча: <em>~33 повторения в день</em>, итого 1000 за месяц. Для продвинутых: берёшь все упражнения.`;
+    document.getElementById('target-info').innerHTML = `Тысяча: <em>~33 повторения в день</em>, итого 1000 за месяц.`;
   }
 
   const lock = document.getElementById('tysyacha-lock');
@@ -1764,6 +1747,7 @@ function renderSettings() {
     const sotkaDone = state.challengeType === 'sotka' && isChallengeComplete();
     lock.style.display = sotkaDone ? 'none' : 'flex';
   }
+
   const sel = document.getElementById('ex-selector');
   sel.innerHTML = EXERCISES.map(ex => {
     const selected = state.selectedExercises.includes(ex.id);
@@ -1794,10 +1778,7 @@ function toggleEx(id) {
 function setChallengeType(type) {
   if (type === 'tysyacha') {
     const sotkaDone = isChallengeComplete() && state.challengeType === 'sotka';
-    if (!sotkaDone) {
-      showToast('Сначала заверши Сотку!');
-      return;
-    }
+    if (!sotkaDone) { showToast('Сначала заверши Сотку!'); return; }
   }
   if (Object.keys(state.log).length > 0 && !isChallengeComplete()) {
     showToast('Сначала заверши текущий челлендж!');
@@ -1814,19 +1795,18 @@ function saveSettings() {
   setTimeout(() => goTo('home'), 600);
 }
 
-// BADGES
 const BADGES = [
-  { id: 'first_step',    emoji: '👣', name: 'Первый шаг',          desc: 'Первая тренировка',           check: (s) => Object.keys(s.log).length >= 1 },
-  { id: 'streak_3',      emoji: '🔥', name: 'Разогрелся',          desc: '3 дня подряд',                check: (s) => getStreak() >= 3 },
-  { id: 'streak_7',      emoji: '⚡', name: 'Неделя без остановок', desc: '7 дней подряд',               check: (s) => getStreak() >= 7 },
-  { id: 'streak_14',     emoji: '🤖', name: 'Машина',              desc: '14 дней подряд',              check: (s) => getStreak() >= 14 },
-  { id: 'streak_30',     emoji: '🏆', name: 'Легенда',             desc: '30 дней подряд',              check: (s) => getStreak() >= 30 },
-  { id: 'reps_1000',     emoji: '💪', name: 'Тысячник',            desc: '1000 повторений всего',       check: (s) => getTotalReps() >= 1000 },
-  { id: 'reps_5000',     emoji: '👹', name: 'Монстр',              desc: '5000 повторений всего',       check: (s) => getTotalReps() >= 5000 },
-  { id: 'reps_10000',    emoji: '🔱', name: 'Сотка x100',          desc: '10000 повторений всего',      check: (s) => getTotalReps() >= 10000 },
-  { id: 'iron_will',     emoji: '🥇', name: 'Железная воля',       desc: 'Ни одного пропуска',          check: (s) => { const days = getChallengeDays().filter(d => d <= today()); return days.length > 0 && days.every(d => isDayComplete(d)); } },
-  { id: 'finish_sotka',  emoji: '🎖', name: 'Финишёр Сотки',       desc: '3000 повторений за месяц',    check: (s) => getTotalReps() >= 3000 && s.challengeType === 'sotka' },
-  { id: 'finish_1000',   emoji: '💎', name: 'Финишёр Тысячи',      desc: 'Завершил челлендж 1000',      check: (s) => isChallengeComplete() && s.challengeType === 'tysyacha' },
+  { id: 'first_step',   emoji: '👣', name: 'Первый шаг',          desc: 'Первая тренировка',           check: (s) => Object.keys(s.log).length >= 1 },
+  { id: 'streak_3',     emoji: '🔥', name: 'Разогрелся',          desc: '3 дня подряд',                check: (s) => getStreak() >= 3 },
+  { id: 'streak_7',     emoji: '⚡', name: 'Неделя без остановок', desc: '7 дней подряд',               check: (s) => getStreak() >= 7 },
+  { id: 'streak_14',    emoji: '🤖', name: 'Машина',              desc: '14 дней подряд',              check: (s) => getStreak() >= 14 },
+  { id: 'streak_30',    emoji: '🏆', name: 'Легенда',             desc: '30 дней подряд',              check: (s) => getStreak() >= 30 },
+  { id: 'reps_1000',    emoji: '💪', name: 'Тысячник',            desc: '1000 повторений всего',       check: (s) => getTotalReps() >= 1000 },
+  { id: 'reps_5000',    emoji: '👹', name: 'Монстр',              desc: '5000 повторений всего',       check: (s) => getTotalReps() >= 5000 },
+  { id: 'reps_10000',   emoji: '🔱', name: 'Сотка x100',          desc: '10000 повторений всего',      check: (s) => getTotalReps() >= 10000 },
+  { id: 'iron_will',    emoji: '🥇', name: 'Железная воля',       desc: 'Ни одного пропуска',          check: (s) => { const days = getChallengeDays().filter(d => d <= today()); return days.length > 0 && days.every(d => isDayComplete(d)); } },
+  { id: 'finish_sotka', emoji: '🎖', name: 'Финишёр Сотки',       desc: '3000 повторений за месяц',    check: (s) => getTotalReps() >= 3000 && s.challengeType === 'sotka' },
+  { id: 'finish_1000',  emoji: '💎', name: 'Финишёр Тысячи',      desc: 'Завершил челлендж 1000',      check: (s) => isChallengeComplete() && s.challengeType === 'tysyacha' },
 ];
 
 function getEarnedBadges() {
@@ -1875,25 +1855,114 @@ function renderBadges() {
     </div>`).join('');
 }
 
+// HELP с видео
 function renderHelp() {
   const list = document.getElementById('help-exercises-list');
-  if (list) {
-    list.innerHTML = EXERCISES.map(ex => `
-      <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:0.5px solid var(--border);">
-        <div style="width:36px;height:36px;background:var(--surface2);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${EXERCISE_ICONS[ex.id]}</div>
-        <div>
-          <div style="font-size:13px;font-weight:600;color:var(--text);">${ex.name}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px;">Видео техники скоро появится</div>
+  if (!list) return;
+
+  list.innerHTML = EXERCISES.map((ex, idx) => `
+    <div class="video-row" id="row-${ex.id}">
+      <div class="video-row-header" onclick="toggleVideoBlock('${ex.id}')">
+        <div style="width:36px;height:36px;background:var(--surface2);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          ${EXERCISE_ICONS[ex.id]}
         </div>
-        <div style="margin-left:auto;font-size:10px;color:#444;font-weight:700;letter-spacing:0.05em;">SOON</div>
-      </div>`).join('');
-    const last = list.querySelector('div:last-child');
-    if (last) last.style.borderBottom = 'none';
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:600;color:var(--text);">${ex.name}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">Нажми — смотри технику 🎬</div>
+        </div>
+        <div class="video-arrow" id="arrow-${ex.id}">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M4.5 6.75l4.5 4.5 4.5-4.5" stroke="#c8f035" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="video-block" id="video-block-${ex.id}">
+        <div class="video-wrap" id="video-wrap-${ex.id}">
+          <video
+            id="video-${ex.id}"
+            style="width:100%;display:block;max-height:420px;object-fit:cover;border-radius:12px;"
+            playsinline
+            preload="none"
+            controls
+          ></video>
+          <div class="video-play-btn" id="play-btn-${ex.id}" onclick="playVideo('${ex.id}')">
+            <div class="video-play-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="#0f0f0f">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="video-loading" id="loading-${ex.id}">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleVideoBlock(id) {
+  const block = document.getElementById('video-block-' + id);
+  const arrow = document.getElementById('arrow-' + id);
+  const isOpen = block.classList.contains('open');
+
+  // Закрываем все
+  EXERCISES.forEach(ex => {
+    const b = document.getElementById('video-block-' + ex.id);
+    const a = document.getElementById('arrow-' + ex.id);
+    const v = document.getElementById('video-' + ex.id);
+    if (b) b.classList.remove('open');
+    if (a) a.classList.remove('open');
+    if (v) { v.pause(); v.src = ''; }
+    const pb = document.getElementById('play-btn-' + ex.id);
+    if (pb) pb.style.display = 'flex';
+    const ld = document.getElementById('loading-' + ex.id);
+    if (ld) ld.classList.remove('show');
+  });
+
+  if (!isOpen) {
+    block.classList.add('open');
+    arrow.classList.add('open');
+  }
+}
+
+async function playVideo(id) {
+  const video = document.getElementById('video-' + id);
+  const playBtn = document.getElementById('play-btn-' + id);
+  const loading = document.getElementById('loading-' + id);
+
+  if (!video) return;
+
+  // Показываем лоадер
+  playBtn.style.display = 'none';
+  loading.classList.add('show');
+
+  try {
+    // Получаем URL через наш API
+    const res = await fetch('/api/video?id=' + id);
+    if (!res.ok) throw new Error('video error');
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    video.src = url;
+    loading.classList.remove('show');
+    await video.play();
+    video.onended = () => {
+      playBtn.style.display = 'flex';
+      URL.revokeObjectURL(url);
+    };
+  } catch(e) {
+    loading.classList.remove('show');
+    playBtn.style.display = 'flex';
+    showToast('Не удалось загрузить видео');
   }
 }
 
 function openTgSupport(type) {
-  const labels = { question: 'Вопрос от участника Челлендж СОТКА', feedback: 'Отзыв от участника Челлендж СОТКА', wish: 'Пожелание от участника Челлендж СОТКА' };
+  const labels = {
+    question: 'Вопрос от участника Челлендж СОТКА',
+    feedback: 'Отзыв от участника Челлендж СОТКА',
+    wish: 'Пожелание от участника Челлендж СОТКА'
+  };
   const tg = window.Telegram && window.Telegram.WebApp;
   const user = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
   const name = user ? (user.first_name || user.username || 'Участник') : 'Участник';
@@ -1941,9 +2010,9 @@ function showToast(msg) {
       window.Telegram.WebApp.expand();
     }
   } catch(e) {}
+
   await loadState();
 
-  // Аватарка из Телеграм
   const tgUser = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user;
   const avatarEl = document.getElementById('tg-avatar');
   if (avatarEl) {
