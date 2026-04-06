@@ -709,13 +709,18 @@ async function init() {
   const muscles = calcMuscles(log);
   updateMuscleCards(muscles);
 
-  // Пол — показать выбор или сразу персонажа
-  if (data.gender) {
-    renderCharacter(data.gender, muscles);
+  // Пол
+  const gender = data.gender;
+  console.log('gender from storage:', gender); // для отладки
+
+  if (gender && (gender === 'male' || gender === 'female')) {
+    renderCharacter(gender, muscles);
   } else {
+    // Показываем экран выбора
     document.getElementById('gender-screen').style.display = 'flex';
   }
 }
+
 
 init();
 </script>
