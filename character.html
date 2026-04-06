@@ -32,173 +32,299 @@
   }
 
   .back-btn {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    flex-shrink: 0;
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0;
   }
 
   .header-title {
     font-family: 'Unbounded', sans-serif;
-    font-size: 22px;
-    font-weight: 900;
-    color: #0f0f0f;
-    letter-spacing: -0.5px;
+    font-size: 22px; font-weight: 900;
+    color: #0f0f0f; letter-spacing: -0.5px;
   }
 
   .header-sub {
-    font-size: 12px;
-    color: rgba(0,0,0,0.5);
-    margin-top: 4px;
-    font-weight: 500;
-    padding-left: 44px;
+    font-size: 12px; color: rgba(0,0,0,0.5);
+    margin-top: 4px; font-weight: 500; padding-left: 44px;
   }
 
+  /* ===== ЭКРАН ВЫБОРА ПОЛА ===== */
+  .gender-screen {
+    position: fixed; inset: 0;
+    background: #0f0f0f;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 32px; z-index: 100;
+    padding: 32px;
+  }
+
+  .gender-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 20px; font-weight: 900;
+    color: #f0f0f0; text-align: center;
+    line-height: 1.3;
+  }
+
+  .gender-sub {
+    font-size: 13px; color: rgba(255,255,255,0.4);
+    text-align: center; margin-top: -20px;
+  }
+
+  .gender-options {
+    display: flex; gap: 20px;
+  }
+
+  .gender-btn {
+    width: 140px;
+    background: #1a1a1a;
+    border: 2px solid #2a2a2a;
+    border-radius: 20px;
+    padding: 24px 16px;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .gender-btn:active { transform: scale(0.97); }
+  .gender-btn.selected { border-color: #c8f035; }
+
+  .gender-btn svg { display: block; }
+
+  .gender-btn-label {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 13px; font-weight: 700;
+    color: #f0f0f0;
+  }
+
+  .gender-confirm {
+    width: 100%;
+    background: #c8f035;
+    border: none; border-radius: 14px;
+    padding: 16px;
+    font-family: 'Unbounded', sans-serif;
+    font-size: 14px; font-weight: 700;
+    color: #0f0f0f; cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .gender-confirm:disabled { opacity: 0.3; }
+
+  /* ===== ОСНОВНОЙ КОНТЕНТ ===== */
   .content {
-    flex: 1;
-    padding: 20px 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
+    flex: 1; padding: 16px 16px 24px;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 16px;
+    overflow-y: auto;
+  }
+
+  .stage-block {
+    text-align: center;
   }
 
   .stage-label {
     font-family: 'Unbounded', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    color: #c8f035;
-    text-align: center;
-    letter-spacing: -0.3px;
+    font-size: 15px; font-weight: 700;
+    color: #c8f035; letter-spacing: -0.3px;
   }
 
   .stage-sub {
-    font-size: 12px;
-    color: rgba(255,255,255,0.4);
-    text-align: center;
+    font-size: 12px; color: rgba(255,255,255,0.4);
     margin-top: 4px;
   }
 
+  /* ===== ПЕРСОНАЖ ===== */
   .character-wrap {
-    width: 220px;
-    height: 320px;
-    position: relative;
+    width: 100%;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: flex-end;
   }
 
+  .character-wrap svg {
+    filter: drop-shadow(0 0 20px rgba(200,240,53,0.15));
+    transition: all 0.5s ease;
+  }
+
+  /* ===== МЫШЦЫ ===== */
   .muscles-grid {
     width: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: 8px;
   }
 
   .muscle-card {
     background: #1a1a1a;
     border: 1.5px solid #2a2a2a;
     border-radius: 12px;
-    padding: 12px 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    padding: 10px 12px;
+    display: flex; align-items: center; gap: 8px;
     transition: border-color 0.3s;
   }
 
-  .muscle-card.active {
-    border-color: #c8f035;
-  }
+  .muscle-card.active { border-color: #c8f035; }
 
-  .muscle-icon {
-    font-size: 22px;
-    flex-shrink: 0;
-  }
+  .muscle-icon { font-size: 20px; flex-shrink: 0; }
 
-  .muscle-info {
-    flex: 1;
-  }
+  .muscle-info { flex: 1; min-width: 0; }
 
   .muscle-name {
-    font-size: 11px;
-    font-weight: 700;
-    color: #f0f0f0;
-    margin-bottom: 5px;
+    font-size: 11px; font-weight: 700;
+    color: #f0f0f0; margin-bottom: 4px;
   }
 
   .muscle-bar-bg {
-    height: 5px;
-    background: #2a2a2a;
-    border-radius: 3px;
-    overflow: hidden;
+    height: 4px; background: #2a2a2a;
+    border-radius: 2px; overflow: hidden;
   }
 
   .muscle-bar-fill {
-    height: 100%;
-    background: #c8f035;
-    border-radius: 3px;
-    transition: width 0.8s ease;
+    height: 100%; background: #c8f035;
+    border-radius: 2px; transition: width 0.8s ease;
   }
 
   .muscle-level {
-    font-size: 10px;
-    color: rgba(255,255,255,0.4);
-    margin-top: 4px;
+    font-size: 10px; color: rgba(255,255,255,0.35);
+    margin-top: 3px;
   }
 
+  /* ===== ПРОГРЕСС ===== */
   .progress-block {
-    width: 100%;
-    background: #1a1a1a;
-    border-radius: 14px;
-    padding: 16px;
+    width: 100%; background: #1a1a1a;
+    border-radius: 14px; padding: 14px 16px;
   }
 
   .progress-title {
-    font-size: 12px;
-    font-weight: 700;
-    color: rgba(255,255,255,0.5);
+    font-size: 11px; font-weight: 700;
+    color: rgba(255,255,255,0.4);
     margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    text-transform: uppercase; letter-spacing: 0.5px;
   }
 
   .progress-bar-bg {
-    height: 8px;
-    background: #2a2a2a;
-    border-radius: 4px;
-    overflow: hidden;
+    height: 7px; background: #2a2a2a;
+    border-radius: 4px; overflow: hidden;
   }
 
   .progress-bar-fill {
     height: 100%;
     background: linear-gradient(90deg, #c8f035, #a0d020);
-    border-radius: 4px;
-    transition: width 1s ease;
+    border-radius: 4px; transition: width 1s ease;
   }
 
   .progress-stats {
-    display: flex;
-    justify-content: space-between;
+    display: flex; justify-content: space-between;
     margin-top: 8px;
   }
 
   .progress-stat {
-    font-size: 11px;
-    color: rgba(255,255,255,0.4);
+    font-size: 11px; color: rgba(255,255,255,0.4);
   }
 
-  .progress-stat span {
-    color: #c8f035;
-    font-weight: 700;
-  }
+  .progress-stat span { color: #c8f035; font-weight: 700; }
 </style>
 </head>
 <body>
 <div class="app">
 
+  <!-- ЭКРАН ВЫБОРА ПОЛА -->
+  <div class="gender-screen" id="gender-screen" style="display:none;">
+    <div class="gender-title">Выбери своего<br>персонажа</div>
+    <div class="gender-sub">Это можно выбрать только один раз</div>
+    <div class="gender-options">
+
+      <!-- ПАРЕНЬ -->
+      <div class="gender-btn" id="btn-male" onclick="selectGender('male')">
+        <svg width="80" height="160" viewBox="0 0 80 160" fill="none">
+          <!-- Голова -->
+          <circle cx="40" cy="18" r="14" fill="#3a3a3a" stroke="#c8f035" stroke-width="1.5"/>
+          <!-- Волосы короткие -->
+          <path d="M27 14 Q40 4 53 14" fill="#222" stroke="none"/>
+          <!-- Шея -->
+          <rect x="35" y="30" width="10" height="8" rx="3" fill="#3a3a3a"/>
+          <!-- Туловище широкое -->
+          <path d="M18 38 Q18 36 22 36 L58 36 Q62 36 62 38 L60 80 Q60 84 56 84 L24 84 Q20 84 20 80 Z" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+          <!-- Грудь -->
+          <ellipse id="mg-chest-l" cx="33" cy="48" rx="10" ry="8" fill="#333"/>
+          <ellipse id="mg-chest-r" cx="47" cy="48" rx="10" ry="8" fill="#333"/>
+          <!-- Пресс -->
+          <rect x="33" y="60" width="6" height="5" rx="1.5" fill="#333"/>
+          <rect x="41" y="60" width="6" height="5" rx="1.5" fill="#333"/>
+          <rect x="33" y="67" width="6" height="5" rx="1.5" fill="#333"/>
+          <rect x="41" y="67" width="6" height="5" rx="1.5" fill="#333"/>
+          <!-- Плечи -->
+          <ellipse cx="18" cy="40" rx="8" ry="7" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+          <ellipse cx="62" cy="40" rx="8" ry="7" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+          <!-- Руки -->
+          <rect x="8" y="46" width="12" height="30" rx="6" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+          <rect x="60" y="46" width="12" height="30" rx="6" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+          <!-- Предплечья -->
+          <rect x="10" y="74" width="10" height="22" rx="5" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+          <rect x="60" y="74" width="10" height="22" rx="5" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+          <!-- Пояс -->
+          <rect x="22" y="82" width="36" height="14" rx="5" fill="#222" stroke="#444" stroke-width="1"/>
+          <!-- Ноги -->
+          <rect x="22" y="94" width="16" height="38" rx="7" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+          <rect x="42" y="94" width="16" height="38" rx="7" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+          <!-- Голени -->
+          <rect x="24" y="130" width="13" height="22" rx="6" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+          <rect x="43" y="130" width="13" height="22" rx="6" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+          <!-- Стопы -->
+          <ellipse cx="31" cy="153" rx="10" ry="5" fill="#222" stroke="#444" stroke-width="1"/>
+          <ellipse cx="50" cy="153" rx="10" ry="5" fill="#222" stroke="#444" stroke-width="1"/>
+        </svg>
+        <div class="gender-btn-label">Парень</div>
+      </div>
+
+      <!-- ДЕВУШКА -->
+      <div class="gender-btn" id="btn-female" onclick="selectGender('female')">
+        <svg width="80" height="160" viewBox="0 0 80 160" fill="none">
+          <!-- Голова -->
+          <circle cx="40" cy="18" r="13" fill="#3a3a3a" stroke="#c8f035" stroke-width="1.5"/>
+          <!-- Волосы длинные -->
+          <path d="M27 14 Q40 2 53 14 L55 45 Q50 48 40 48 Q30 48 25 45 Z" fill="#222" stroke="none"/>
+          <!-- Шея -->
+          <rect x="36" y="30" width="8" height="7" rx="3" fill="#3a3a3a"/>
+          <!-- Туловище женское (талия) -->
+          <path d="M24 37 Q24 35 28 35 L52 35 Q56 35 56 37 L54 58 Q54 62 58 68 L58 78 Q58 82 54 82 L26 82 Q22 82 22 78 L22 68 Q26 62 26 58 Z" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+          <!-- Грудь женская -->
+          <ellipse id="fg-chest-l" cx="34" cy="45" rx="8" ry="7" fill="#333"/>
+          <ellipse id="fg-chest-r" cx="46" cy="45" rx="8" ry="7" fill="#333"/>
+          <!-- Пресс тонкий -->
+          <rect x="35" y="58" width="5" height="4" rx="1.5" fill="#333"/>
+          <rect x="40" y="58" width="5" height="4" rx="1.5" fill="#333"/>
+          <!-- Плечи узкие -->
+          <ellipse cx="22" cy="39" rx="6" ry="5" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+          <ellipse cx="58" cy="39" rx="6" ry="5" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+          <!-- Руки тонкие -->
+          <rect x="13" y="43" width="10" height="26" rx="5" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+          <rect x="57" y="43" width="10" height="26" rx="5" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+          <!-- Предплечья -->
+          <rect x="14" y="67" width="8" height="20" rx="4" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+          <rect x="58" y="67" width="8" height="20" rx="4" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+          <!-- Бёдра широкие -->
+          <path d="M20 80 L60 80 L62 96 Q62 100 58 100 L22 100 Q18 100 18 96 Z" fill="#222" stroke="#444" stroke-width="1"/>
+          <!-- Ноги -->
+          <rect x="21" y="98" width="15" height="36" rx="7" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+          <rect x="44" y="98" width="15" height="36" rx="7" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+          <!-- Голени -->
+          <rect x="23" y="132" width="12" height="20" rx="5" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+          <rect x="45" y="132" width="12" height="20" rx="5" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+          <!-- Стопы -->
+          <ellipse cx="29" cy="153" rx="9" ry="4" fill="#222" stroke="#444" stroke-width="1"/>
+          <ellipse cx="51" cy="153" rx="9" ry="4" fill="#222" stroke="#444" stroke-width="1"/>
+        </svg>
+        <div class="gender-btn-label">Девушка</div>
+      </div>
+
+    </div>
+    <button class="gender-confirm" id="gender-confirm" disabled onclick="confirmGender()">
+      Выбрать персонажа
+    </button>
+  </div>
+
+  <!-- ОСНОВНОЙ ЭКРАН -->
   <div class="header">
     <div class="header-top">
       <div class="back-btn" onclick="history.back()">
@@ -213,37 +339,385 @@
 
   <div class="content">
 
-    <div>
+    <div class="stage-block">
       <div class="stage-label" id="stage-name">Загрузка...</div>
       <div class="stage-sub" id="stage-days"></div>
     </div>
 
-    <div class="character-wrap">
-      <svg id="character-svg" width="200" height="300" viewBox="0 0 200 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Голова -->
-        <circle cx="100" cy="36" r="22" fill="#2a2a2a" stroke="#c8f035" stroke-width="1.5"/>
-        <!-- Шея -->
-        <rect x="93" y="56" width="14" height="12" rx="4" fill="#2a2a2a"/>
-        <!-- Туловище -->
-        <rect id="body" x="68" y="68" width="64" height="72" rx="10" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
-        <!-- Грудь левая -->
-        <ellipse id="chest-l" cx="88" cy="84" rx="13" ry="10" fill="#333"/>
-        <!-- Грудь правая -->
-        <ellipse id="chest-r" cx="112" cy="84" rx="13" ry="10" fill="#333"/>
-        <!-- Пресс -->
-        <rect id="abs-1" x="91" y="98" width="8" height="7" rx="2" fill="#333"/>
-        <rect id="abs-2" x="101" y="98" width="8" height="7" rx="2" fill="#333"/>
-        <rect id="abs-3" x="91" y="108" width="8" height="7" rx="2" fill="#333"/>
-        <rect id="abs-4" x="101" y="108" width="8" height="7" rx="2" fill="#333"/>
-        <rect id="abs-5" x="91" y="118" width="8" height="7" rx="2" fill="#333"/>
-        <rect id="abs-6" x="101" y="118" width="8" height="7" rx="2" fill="#333"/>
-        <!-- Левое плечо -->
-        <ellipse id="shoulder-l" cx="60" cy="78" rx="10" ry="9" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
-        <!-- Правое плечо -->
-        <ellipse id="shoulder-r" cx="140" cy="78" rx="10" ry="9" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
-        <!-- Левая рука (бицепс) -->
-        <rect id="arm-l" x="48" y="86" width="14" height="36" rx="7" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
-        <!-- Правая рука (бицепс) -->
-        <rect id="arm-r" x="138" y="86" width="14" height="36" rx="7" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
-        <!-- Левое предплечье -->
-        <rect x="50" y="120" width="12
+    <div class="character-wrap" id="character-wrap">
+      <!-- SVG персонажа вставляется сюда через JS -->
+    </div>
+
+    <div class="muscles-grid">
+      <div class="muscle-card" id="card-chest">
+        <div class="muscle-icon">🫁</div>
+        <div class="muscle-info">
+          <div class="muscle-name">Грудь</div>
+          <div class="muscle-bar-bg"><div class="muscle-bar-fill" id="bar-chest" style="width:0%"></div></div>
+          <div class="muscle-level" id="lvl-chest">Уровень 0</div>
+        </div>
+      </div>
+      <div class="muscle-card" id="card-back">
+        <div class="muscle-icon">🔙</div>
+        <div class="muscle-info">
+          <div class="muscle-name">Спина</div>
+          <div class="muscle-bar-bg"><div class="muscle-bar-fill" id="bar-back" style="width:0%"></div></div>
+          <div class="muscle-level" id="lvl-back">Уровень 0</div>
+        </div>
+      </div>
+      <div class="muscle-card" id="card-legs">
+        <div class="muscle-icon">🦵</div>
+        <div class="muscle-info">
+          <div class="muscle-name">Ноги</div>
+          <div class="muscle-bar-bg"><div class="muscle-bar-fill" id="bar-legs" style="width:0%"></div></div>
+          <div class="muscle-level" id="lvl-legs">Уровень 0</div>
+        </div>
+      </div>
+      <div class="muscle-card" id="card-arms">
+        <div class="muscle-icon">💪</div>
+        <div class="muscle-info">
+          <div class="muscle-name">Руки</div>
+          <div class="muscle-bar-bg"><div class="muscle-bar-fill" id="bar-arms" style="width:0%"></div></div>
+          <div class="muscle-level" id="lvl-arms">Уровень 0</div>
+        </div>
+      </div>
+      <div class="muscle-card" id="card-abs">
+        <div class="muscle-icon">⚡</div>
+        <div class="muscle-info">
+          <div class="muscle-name">Пресс</div>
+          <div class="muscle-bar-bg"><div class="muscle-bar-fill" id="bar-abs" style="width:0%"></div></div>
+          <div class="muscle-level" id="lvl-abs">Уровень 0</div>
+        </div>
+      </div>
+      <div class="muscle-card" id="card-core">
+        <div class="muscle-icon">🎯</div>
+        <div class="muscle-info">
+          <div class="muscle-name">Кор</div>
+          <div class="muscle-bar-bg"><div class="muscle-bar-fill" id="bar-core" style="width:0%"></div></div>
+          <div class="muscle-level" id="lvl-core">Уровень 0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-block">
+      <div class="progress-title">Общий прогресс челленджа</div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="overall-bar" style="width:0%"></div>
+      </div>
+      <div class="progress-stats">
+        <div class="progress-stat">День <span id="stat-day">0</span> из 30</div>
+        <div class="progress-stat"><span id="stat-pct">0</span>% выполнено</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const tg = window.Telegram && window.Telegram.WebApp;
+if (tg) tg.ready();
+
+let selectedGender = null;
+
+function selectGender(g) {
+  selectedGender = g;
+  document.getElementById('btn-male').classList.toggle('selected', g === 'male');
+  document.getElementById('btn-female').classList.toggle('selected', g === 'female');
+  document.getElementById('gender-confirm').disabled = false;
+}
+
+function confirmGender() {
+  if (!selectedGender) return;
+  saveGender(selectedGender);
+  document.getElementById('gender-screen').style.display = 'none';
+  renderCharacter(selectedGender, {}, 0);
+}
+
+function saveGender(g) {
+  if (tg && tg.CloudStorage) {
+    tg.CloudStorage.setItem('characterGender', g, () => {});
+  } else {
+    localStorage.setItem('characterGender', g);
+  }
+}
+
+// ===== SVG ПЕРСОНАЖИ =====
+
+function getMaleSVG(muscles) {
+  const chestW = lerp(10, 16, clamp(muscles.chest / 25));
+  const armW   = lerp(12, 20, clamp(muscles.arms  / 25));
+  const legW   = lerp(16, 24, clamp(muscles.legs  / 25));
+  const shoulderR = lerp(8, 13, clamp((muscles.arms + muscles.chest) / 40));
+
+  const chestCol  = muscleColor(muscles.chest);
+  const armCol    = muscleColor(muscles.arms);
+  const legCol    = muscleColor(muscles.legs);
+  const absCol    = muscleColor(muscles.abs + muscles.core);
+  const backCol   = muscleColor(muscles.back);
+
+  const absRects = [0,1,2,3,4,5].map(i => {
+    const row = Math.floor(i / 2);
+    const col = i % 2;
+    const x = col === 0 ? 33 : 41;
+    const y = 60 + row * 8;
+    const c = (muscles.abs + muscles.core) >= (i + 1) * 3 ? absCol : '#2a2a2a';
+    return `<rect x="${x}" y="${y}" width="6" height="5" rx="1.5" fill="${c}"/>`;
+  }).join('');
+
+  return `<svg width="160" height="280" viewBox="0 0 80 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Голова -->
+    <circle cx="40" cy="18" r="14" fill="#3a3a3a" stroke="#c8f035" stroke-width="1.5"/>
+    <!-- Волосы -->
+    <path d="M27 14 Q40 4 53 14" fill="#222"/>
+    <!-- Ухо левое -->
+    <ellipse cx="26" cy="18" rx="3" ry="4" fill="#3a3a3a" stroke="#555" stroke-width="0.8"/>
+    <!-- Ухо правое -->
+    <ellipse cx="54" cy="18" rx="3" ry="4" fill="#3a3a3a" stroke="#555" stroke-width="0.8"/>
+    <!-- Лицо -->
+    <ellipse cx="36" cy="19" rx="2" ry="2.5" fill="#555"/>
+    <ellipse cx="44" cy="19" rx="2" ry="2.5" fill="#555"/>
+    <path d="M36 24 Q40 27 44 24" stroke="#555" stroke-width="1" fill="none" stroke-linecap="round"/>
+    <!-- Шея -->
+    <rect x="35" y="30" width="10" height="8" rx="3" fill="#3a3a3a"/>
+    <!-- Трапеции -->
+    <path d="M35 31 Q28 33 22 37" stroke="#444" stroke-width="3" stroke-linecap="round"/>
+    <path d="M45 31 Q52 33 58 37" stroke="#444" stroke-width="3" stroke-linecap="round"/>
+    <!-- Туловище -->
+    <path d="M18 38 Q18 36 22 36 L58 36 Q62 36 62 38 L60 80 Q60 84 56 84 L24 84 Q20 84 20 80 Z" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+    <!-- Грудь левая -->
+    <ellipse cx="33" cy="48" rx="${chestW}" ry="${chestW*0.75}" fill="${chestCol}"/>
+    <!-- Грудь правая -->
+    <ellipse cx="47" cy="48" rx="${chestW}" ry="${chestW*0.75}" fill="${chestCol}"/>
+    <!-- Линия груди -->
+    <path d="M40 40 L40 57" stroke="#1a1a1a" stroke-width="1"/>
+    <!-- Пресс -->
+    ${absRects}
+    <!-- Плечо левое -->
+    <ellipse cx="18" cy="40" rx="${shoulderR}" ry="${shoulderR*0.85}" fill="#2a2a2a" stroke="${armCol}" stroke-width="1"/>
+    <!-- Плечо правое -->
+    <ellipse cx="62" cy="40" rx="${shoulderR}" ry="${shoulderR*0.85}" fill="#2a2a2a" stroke="${armCol}" stroke-width="1"/>
+    <!-- Рука левая (бицепс) -->
+    <rect x="${10 - armW/2 + 3}" y="46" width="${armW}" height="28" rx="${armW/2}" fill="${armCol}" stroke="#1a1a1a" stroke-width="0.8"/>
+    <!-- Рука правая (бицепс) -->
+    <rect x="${67 - armW/2}" y="46" width="${armW}" height="28" rx="${armW/2}" fill="${armCol}" stroke="#1a1a1a" stroke-width="0.8"/>
+    <!-- Предплечье левое -->
+    <rect x="10" y="72" width="10" height="22" rx="5" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+    <!-- Предплечье правое -->
+    <rect x="60" y="72" width="10" height="22" rx="5" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+    <!-- Пояс -->
+    <rect x="22" y="82" width="36" height="14" rx="5" fill="#1e1e1e" stroke="#444" stroke-width="1"/>
+    <!-- Пряжка ремня -->
+    <rect x="37" y="86" width="6" height="6" rx="1" fill="#333" stroke="#c8f035" stroke-width="0.8"/>
+    <!-- Нога левая -->
+    <rect x="${22}" y="94" width="${legW}" height="38" rx="7" fill="${legCol}" stroke="#1a1a1a" stroke-width="0.8"/>
+    <!-- Нога правая -->
+    <rect x="${80 - 22 - legW}" y="94" width="${legW}" height="38" rx="7" fill="${legCol}" stroke="#1a1a1a" stroke-width="0.8"/>
+    <!-- Линия между ног -->
+    <path d="M40 94 L40 106" stroke="#1a1a1a" stroke-width="1.5"/>
+    <!-- Голень левая -->
+    <rect x="24" y="130" width="13" height="22" rx="6" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+    <!-- Голень правая -->
+    <rect x="43" y="130" width="13" height="22" rx="6" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+    <!-- Стопа левая -->
+    <ellipse cx="31" cy="153" rx="11" ry="5" fill="#1e1e1e" stroke="#444" stroke-width="1"/>
+    <!-- Стопа правая -->
+    <ellipse cx="50" cy="153" rx="11" ry="5" fill="#1e1e1e" stroke="#444" stroke-width="1"/>
+  </svg>`;
+}
+
+function getFemaleSVG(muscles) {
+  const chestW    = lerp(7, 12, clamp(muscles.chest / 20));
+  const armW      = lerp(8, 14, clamp(muscles.arms  / 20));
+  const legW      = lerp(15, 22, clamp(muscles.legs  / 20));
+  const hipW      = lerp(36, 44, clamp(muscles.legs  / 20));
+
+  const chestCol  = muscleColor(muscles.chest);
+  const armCol    = muscleColor(muscles.arms);
+  const legCol    = muscleColor(muscles.legs);
+  const absCol    = muscleColor(muscles.abs + muscles.core);
+
+  const absRects = [0,1].map(i => {
+    const col = i % 2;
+    const x = col === 0 ? 35 : 40;
+    const c = (muscles.abs + muscles.core) >= (i + 1) * 4 ? absCol : '#2a2a2a';
+    return `<rect x="${x}" y="60" width="4" height="4" rx="1" fill="${c}"/>`;
+  }).join('');
+
+  return `<svg width="160" height="280" viewBox="0 0 80 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Волосы (сзади/длинные) -->
+    <path d="M27 16 Q24 50 26 70" stroke="#1a1a1a" stroke-width="8" stroke-linecap="round"/>
+    <path d="M53 16 Q56 50 54 70" stroke="#1a1a1a" stroke-width="8" stroke-linecap="round"/>
+    <!-- Голова -->
+    <circle cx="40" cy="18" r="13" fill="#3a3a3a" stroke="#c8f035" stroke-width="1.5"/>
+    <!-- Чёлка -->
+    <path d="M28 12 Q40 6 52 12 Q48 18 40 17 Q32 18 28 12Z" fill="#1a1a1a"/>
+    <!-- Ухо левое -->
+    <ellipse cx="27" cy="18" rx="2.5" ry="3.5" fill="#3a3a3a" stroke="#555" stroke-width="0.8"/>
+    <!-- Ухо правое -->
+    <ellipse cx="53" cy="18" rx="2.5" ry="3.5" fill="#3a3a3a" stroke="#555" stroke-width="0.8"/>
+    <!-- Лицо -->
+    <ellipse cx="36" cy="19" rx="1.8" ry="2.2" fill="#555"/>
+    <ellipse cx="44" cy="19" rx="1.8" ry="2.2" fill="#555"/>
+    <path d="M37 24 Q40 26.5 43 24" stroke="#c87070" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+    <!-- Шея -->
+    <rect x="36" y="30" width="8" height="7" rx="3" fill="#3a3a3a"/>
+    <!-- Туловище женское -->
+    <path d="M25 36 Q25 34 29 34 L51 34 Q55 34 55 36 L53 55 Q53 59 57 65 L57 78 Q57 82 53 82 L27 82 Q23 82 23 78 L23 65 Q27 59 27 55 Z" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+    <!-- Грудь левая -->
+    <ellipse cx="34" cy="44" rx="${chestW}" ry="${chestW*0.85}" fill="${chestCol}"/>
+    <!-- Грудь правая -->
+    <ellipse cx="46" cy="44" rx="${chestW}" ry="${chestW*0.85}" fill="${chestCol}"/>
+    <!-- Пресс -->
+    ${absRects}
+    <!-- Плечо левое -->
+    <ellipse cx="23" cy="38" rx="6" ry="5" fill="#2a2a2a" stroke="${armCol}" stroke-width="1"/>
+    <!-- Плечо правое -->
+    <ellipse cx="57" cy="38" rx="6" ry="5" fill="#2a2a2a" stroke="${armCol}" stroke-width="1"/>
+    <!-- Рука левая -->
+    <rect x="${14 - armW/2 + 2}" y="42" width="${armW}" height="24" rx="${armW/2}" fill="${armCol}" stroke="#1a1a1a" stroke-width="0.8"/>
+    <!-- Рука правая -->
+    <rect x="${64 - armW/2}" y="42" width="${armW}" height="24" rx="${armW/2}" fill="${armCol}" stroke="#1a1a1a" stroke-width="0.8"/>
+    <!-- Предплечье левое -->
+    <rect x="14" y="64" width="8" height="20" rx="4" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+    <!-- Предплечье правое -->
+    <rect x="58" y="64" width="8" height="20" rx="4" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+    <!-- Бёдра -->
+    <path d="M20 80 L60 80 L${20 + (hipW - 36)/2 + 36} 98 Q62 102 58 102 L22 102 Q18 102 ${20 - (hipW-36)/2} 98 Z" fill="#1e1e1e" stroke="#444" stroke-width="1"/>
+    <!-- Нога левая -->
+    <rect x="21" y="100" width="${legW}" height="34" rx="7" fill="${legCol}" stroke="#1a1a1a" stroke-width="0.8"/>
+    <!-- Нога правая -->
+    <rect x="${80 - 21 - legW}" y="100" width="${legW}" height="34" rx="7" fill="${legCol}" stroke="#1a1a1a" stroke-width="0.8"/>
+    <!-- Голень левая -->
+    <rect x="23" y="132" width="12" height="20" rx="5" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+    <!-- Голень правая -->
+    <rect x="45" y="132" width="12" height="20" rx="5" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+    <!-- Стопа левая -->
+    <ellipse cx="29" cy="153" rx="10" ry="4.5" fill="#1e1e1e" stroke="#444" stroke-width="1"/>
+    <!-- Стопа правая -->
+    <ellipse cx="51" cy="153" rx="10" ry="4.5" fill="#1e1e1e" stroke="#444" stroke-width="1"/>
+  </svg>`;
+}
+
+// ===== ХЕЛПЕРЫ =====
+function lerp(a, b, t) { return a + (b - a) * t; }
+function clamp(v) { return Math.max(0, Math.min(1, v)); }
+
+function muscleColor(points) {
+  if (points >= 20) return '#c8f035';
+  if (points >= 12) return '#8ab828';
+  if (points >= 5)  return '#4a6614';
+  return '#333';
+}
+
+function muscleLevel(points) { return Math.min(10, Math.floor(points / 3)); }
+function musclePct(points)   { return Math.min(100, Math.round((points / 30) * 100)); }
+
+function getStage(d) {
+  if (d < 7)  return { name: '🥱 Новичок',    sub: 'Только начинаешь — продолжай!' };
+  if (d < 13) return { name: '😤 Втягиваюсь', sub: 'Уже виден небольшой прогресс' };
+  if (d < 19) return { name: '💪 В форме',     sub: 'Мышцы начинают расти!' };
+  if (d < 25) return { name: '🔥 Спортсмен',   sub: 'Серьёзный прогресс!' };
+  return             { name: '⚡ Зверь',        sub: 'Ты на пике формы!' };
+}
+
+function calcMuscles(log) {
+  const m = { chest:0, back:0, legs:0, arms:0, abs:0, core:0 };
+  const map = {
+    pushups:   { chest:2, arms:1 },
+    pullups:   { back:2,  arms:2 },
+    squats:    { legs:3 },
+    dips:      { arms:2,  chest:1 },
+    crunches:  { abs:3 },
+    kneeraise: { abs:2,   core:2 },
+    lunges:    { legs:3,  core:1 }
+  };
+  Object.values(log).forEach(day => {
+    if (!day) return;
+    Object.entries(day).forEach(([ex, sets]) => {
+      if (!map[ex]) return;
+      if (Array.isArray(sets) && sets.some(s => s > 0)) {
+        Object.entries(map[ex]).forEach(([muscle, pts]) => { m[muscle] += pts; });
+      }
+    });
+  });
+  return m;
+}
+
+function renderCharacter(gender, muscles) {
+  const wrap = document.getElementById('character-wrap');
+  wrap.innerHTML = gender === 'female' ? getFemaleSVG(muscles) : getMaleSVG(muscles);
+}
+
+function updateMuscleCards(muscles) {
+  ['chest','back','legs','arms','abs','core'].forEach(k => {
+    const pts = muscles[k];
+    document.getElementById('bar-' + k).style.width = musclePct(pts) + '%';
+    document.getElementById('lvl-' + k).textContent = 'Уровень ' + muscleLevel(pts);
+    if (muscleLevel(pts) > 0) document.getElementById('card-' + k).classList.add('active');
+  });
+}
+
+// ===== ЗАГРУЗКА ДАННЫХ =====
+function loadData() {
+  return new Promise(resolve => {
+    if (tg && tg.CloudStorage) {
+      tg.CloudStorage.getItems(['challengeType','selectedExercises','startDate','log','characterGender'], (err, data) => {
+        if (err || !data) return resolve({});
+        try {
+          resolve({
+            startDate: data.startDate,
+            log: JSON.parse(data.log || '{}'),
+            gender: data.characterGender || null
+          });
+        } catch(e) { resolve({}); }
+      });
+    } else {
+      resolve({
+        startDate: localStorage.getItem('startDate'),
+        log: JSON.parse(localStorage.getItem('log') || '{}'),
+        gender: localStorage.getItem('characterGender')
+      });
+    }
+  });
+}
+
+// ===== ИНИЦИАЛИЗАЦИЯ =====
+async function init() {
+  const data = await loadData();
+  const log = data.log || {};
+
+  // День челленджа
+  let daysPassed = 0;
+  if (data.startDate) {
+    const diff = new Date() - new Date(data.startDate);
+    daysPassed = Math.max(0, Math.min(30, Math.floor(diff / 86400000)));
+  }
+
+  // Стадия
+  const stage = getStage(daysPassed);
+  document.getElementById('stage-name').textContent = stage.name;
+  document.getElementById('stage-days').textContent = stage.sub;
+
+  // Прогресс
+  const totalDays = Object.keys(log).length;
+  const pct = Math.round((totalDays / 30) * 100);
+  document.getElementById('overall-bar').style.width = pct + '%';
+  document.getElementById('stat-day').textContent = daysPassed;
+  document.getElementById('stat-pct').textContent = pct;
+
+  // Мышцы
+  const muscles = calcMuscles(log);
+  updateMuscleCards(muscles);
+
+  // Пол — показать выбор или сразу персонажа
+  if (data.gender) {
+    renderCharacter(data.gender, muscles);
+  } else {
+    document.getElementById('gender-screen').style.display = 'flex';
+  }
+}
+
+init();
+</script>
+</body>
+</html>
