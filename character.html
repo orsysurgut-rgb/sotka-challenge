@@ -710,16 +710,10 @@ async function init() {
   updateMuscleCards(muscles);
 
   // Пол
-  const gender = data.gender;
-  console.log('gender from storage:', gender); // для отладки
-
-  if (gender && (gender === 'male' || gender === 'female')) {
-    renderCharacter(gender, muscles);
-  } else {
-    // Показываем экран выбора
-    document.getElementById('gender-screen').style.display = 'flex';
-  }
+    renderCharacter('male', muscles);
 }
+
+
 
 
 init();
