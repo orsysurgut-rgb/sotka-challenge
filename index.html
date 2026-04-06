@@ -1743,7 +1743,7 @@ async function saveLog() {
   const t = currentLogDate;
   state.log[t] = JSON.parse(JSON.stringify(state.tempLog));
   await saveState();
-  syncToServer();
+  syncToServer(); // ← вот она, отправка при сохранении тренировки
   checkNewBadges();
   showToast('Тренировка сохранена!');
   setTimeout(() => goTo('home'), 800);
@@ -2052,6 +2052,7 @@ function showToast(msg) {
   }
 
   renderHome();
+ syncToServer(); // ← вот она, отправка при открытии приложения
 })();
 </script>
 </body>
