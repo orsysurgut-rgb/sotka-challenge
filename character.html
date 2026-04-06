@@ -683,36 +683,36 @@ function loadData() {
 
 // ===== ИНИЦИАЛИЗАЦИЯ =====
 async function init() {
+  // Сначала сразу рисуем персонажа с нулями
+  const emptyMuscles = { chest:0, back:0, legs:0, arms:0, abs:0, core:0 };
+  renderCharacter('male', emptyMuscles);
+  document.getElementById('stage-name').textContent = '🥱 Новичок';
+  document.getElementById('stage-days').textContent = 'Только начинаешь — продолжай!';
+
+  // Потом грузим данные
   const data = await loadData();
   const log = data.log || {};
 
-  // День челленджа
   let daysPassed = 0;
   if (data.startDate) {
     const diff = new Date() - new Date(data.startDate);
     daysPassed = Math.max(0, Math.min(30, Math.floor(diff / 86400000)));
   }
 
-  // Стадия
   const stage = getStage(daysPassed);
   document.getElementById('stage-name').textContent = stage.name;
   document.getElementById('stage-days').textContent = stage.sub;
 
-  // Прогресс
   const totalDays = Object.keys(log).length;
   const pct = Math.round((totalDays / 30) * 100);
   document.getElementById('overall-bar').style.width = pct + '%';
   document.getElementById('stat-day').textContent = daysPassed;
   document.getElementById('stat-pct').textContent = pct;
 
-  // Мышцы
   const muscles = calcMuscles(log);
   updateMuscleCards(muscles);
-
-  // Пол
-    renderCharacter('male', muscles);
+  renderCharacter('male', muscles);
 }
-
 
 
 
