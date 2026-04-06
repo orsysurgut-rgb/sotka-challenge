@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    const { tg_user_id, tg_username, tg_first_name, challenge_type, selected_exercises, start_date, log, streak: clientStreak } = req.body;
+    const { tg_user_id, tg_username, tg_first_name, challenge_type, selected_exercises, start_date, log } = req.body;
 
 
     if (!tg_user_id) return res.status(400).json({ error: 'tg_user_id required' });
@@ -28,7 +28,19 @@ export default async function handler(req, res) {
     }, 0);
 
     // Серия
-    const streak = (clientStreak !== undefined && clientStreak !== null) ? clientStreak : 0;
+    let streak = 0;
+const today = new Date().toISOString().slice(0, 10);
+const sortedDates = Object.keys(log || {}).sort().reverse();
+for (const date of sortedDates) {
+  if (date > today) continue;
+  const dayLog = log[date];
+  const done = challenge_type === 'sotka'
+    ? Object.values(dayLog).some(v => v >= 100)
+    : Object.values(dayLog).reduce((s, v) => s + v, 0) >= 34;
+  if (done) streak++;
+  else break;
+}
+
 
 
     const today_iso = new Date().toISOString();
