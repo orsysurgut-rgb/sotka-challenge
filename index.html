@@ -2052,7 +2052,7 @@ function showToast(msg) {
   }
 
   renderHome();
- syncToServer(); // ← вот она, отправка при открытии приложения
+ setTimeout(() => syncToServer(), 1500); // ← вот она, отправка при открытии приложения, Даём 1.5 секунды чтобы loadState() успел загрузить данные из CloudStorage перед отправкой! 🙂
 })();
 </script>
 </body>
