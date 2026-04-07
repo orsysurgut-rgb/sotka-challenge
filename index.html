@@ -1686,13 +1686,38 @@ function renderLog() {
     const val = state.tempLog[id] || 0;
     const pct = Math.min(100, Math.round((val / target) * 100));
     return `<div class="log-ex-card">
-      <div class="log-ex-header">
+            <div class="log-ex-header">
         <div class="log-ex-emoji" style="font-size:0;">${EXERCISE_ICONS[ex.id]}</div>
-        <div>
+        <div style="flex:1;">
           <div class="log-ex-name">${ex.name}</div>
           <div class="log-ex-target">Цель: ${target} повторений</div>
         </div>
+        <input
+          type="number"
+          id="input-${id}"
+          value="${val}"
+          min="0"
+          max="${target * 3}"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          onchange="setCount('${id}', this.value)"
+          style="
+            width: 64px;
+            background: var(--surface2);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            color: var(--green);
+            font-family: 'Unbounded', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
+            padding: 6px 4px;
+            outline: none;
+            -moz-appearance: textfield;
+          "
+        />
       </div>
+
       <div class="counter-row">
         <div class="counter-btn" onclick="changeCount('${id}', -10)" style="font-size:14px;font-weight:700;">−10</div>
         <div class="counter-btn" onclick="changeCount('${id}', -1)" style="font-size:14px;font-weight:700;">−1</div>
@@ -1713,10 +1738,30 @@ function changeCount(id, delta) {
   const val = state.tempLog[id];
   const pct = Math.min(100, Math.round((val / target) * 100));
   document.getElementById('cnt-' + id).textContent = val;
+  const inputEl = document.getElementById('input-' + id);
+  if (inputEl) inputEl.value = val;
   const bar = document.getElementById('bar-' + id);
   bar.style.width = pct + '%';
   if (pct >= 100) bar.classList.add('full');
   else bar.classList.remove('full');
+}
+
+  function setCount(id, rawVal) {
+  const target = getTarget();
+  const val = Math.max(0, Math.min(target * 3, parseInt(rawVal) || 0));
+  state.tempLog[id] = val;
+  const pct = Math.min(100, Math.round((val / target) * 100));
+  // Обновляем счётчик и бар
+  const cntEl = document.getElementById('cnt-' + id);
+  const barEl = document.getElementById('bar-' + id);
+  const inputEl = document.getElementById('input-' + id);
+  if (cntEl) cntEl.textContent = val;
+  if (inputEl) inputEl.value = val;
+  if (barEl) {
+    barEl.style.width = pct + '%';
+    if (pct >= 100) barEl.classList.add('full');
+    else barEl.classList.remove('full');
+  }
 }
 
 async function syncToServer() {
