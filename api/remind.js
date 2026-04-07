@@ -78,16 +78,23 @@ function calcRank(participants, userId, today) {
       const log = p.log || {};
       let completedDays = 0;
       let totalReps = 0;
+      let streak = calcStreak(log, today);
       Object.entries(log).forEach(([date, dayLog]) => {
         if (!dayLog) return;
         const dayTotal = Object.values(dayLog).reduce((s, v) => s + v, 0);
         if (dayTotal >= 100) completedDays++;
         totalReps += dayTotal;
       });
-      return { id: p.tg_user_id, completedDays, totalReps };
+      return { id: p.tg_user_id, totalReps, completedDays, streak };
     })
-    .sort((a, b) => b.completedDays - a.completedDays || b.totalReps - a.totalReps);
-
+    .sort((a, b) => {
+      // 1. Повторения
+      if (b.totalReps !== a.totalReps) return b.totalReps - a.totalReps;
+      // 2. Выполненные дни
+      if (b.completedDays !== a.completedDays) return b.completedDays - a.completedDays;
+      // 3. Серия
+      return b.streak - a.streak;
+    });
   const rank = scores.findIndex(s => s.id === userId) + 1;
   return rank;
 }
