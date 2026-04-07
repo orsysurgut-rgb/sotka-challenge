@@ -1700,7 +1700,7 @@ function renderLog() {
           max="${target * 3}"
           inputmode="numeric"
           pattern="[0-9]*"
-          onchange="setCount('${id}', this.value)"
+          onkeydown="if(event.key==='Enter'||event.keyCode===13){setCount('${id}',this.value);this.blur();}"
           style="
             width: 64px;
             background: var(--surface2);
