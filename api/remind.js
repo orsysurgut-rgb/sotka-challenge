@@ -35,6 +35,63 @@ const REMIND_PHRASES = [
   'День 30. Последний день — не ложись спать пока не добьёшь финальную сотку.',
 ];
 
+// Считаем серию подряд до сегодня
+function calcStreak(log, today) {
+  let streak = 0;
+  let date = new Date(today);
+  while (true) {
+    const key = date.toISOString().slice(0, 10);
+    const dayLog = log[key];
+    const total = dayLog ? Object.values(dayLog).reduce((s, v) => s + v, 0) : 0;
+    if (total >= 100) {
+      streak++;
+      date.setDate(date.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
+// Считаем общую статистику
+function calcStats(log, today) {
+  let totalReps = 0;
+  let completedDays = 0;
+  let bestDay = 0;
+
+  Object.entries(log).forEach(([date, dayLog]) => {
+    if (!dayLog) return;
+    const dayTotal = Object.values(dayLog).reduce((s, v) => s + v, 0);
+    totalReps += dayTotal;
+    if (dayTotal >= 100) completedDays++;
+    if (dayTotal > bestDay) bestDay = dayTotal;
+  });
+
+  return { totalReps, completedDays, bestDay };
+}
+
+// Считаем место в рейтинге
+function calcRank(participants, userId, today) {
+  const scores = participants
+    .filter(p => !p.tg_user_id.startsWith('browser_'))
+    .map(p => {
+      const log = p.log || {};
+      let completedDays = 0;
+      let totalReps = 0;
+      Object.entries(log).forEach(([date, dayLog]) => {
+        if (!dayLog) return;
+        const dayTotal = Object.values(dayLog).reduce((s, v) => s + v, 0);
+        if (dayTotal >= 100) completedDays++;
+        totalReps += dayTotal;
+      });
+      return { id: p.tg_user_id, completedDays, totalReps };
+    })
+    .sort((a, b) => b.completedDays - a.completedDays || b.totalReps - a.totalReps);
+
+  const rank = scores.findIndex(s => s.id === userId) + 1;
+  return rank;
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'GET' && req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -49,6 +106,7 @@ export default async function handler(req, res) {
     const todayDate = new Date(today);
     const dayIndex = Math.max(0, Math.min(29, Math.floor((todayDate - startDate) / 86400000)));
     const dayPhrase = REMIND_PHRASES[dayIndex];
+    const challengeDay = dayIndex + 1;
 
     const response = await fetch(`${SUPABASE_URL}/rest/v1/participants?select=tg_user_id,tg_first_name,log,challenge_type,last_reminder_msg_id`, {
       headers: {
@@ -67,61 +125,89 @@ export default async function handler(req, res) {
         continue;
       }
 
-      const todayLog = p.log && p.log[today];
+      const log = p.log || {};
+      const todayLog = log[today];
       const totalToday = todayLog ? Object.values(todayLog).reduce((s, v) => s + v, 0) : 0;
       const isDone = p.challenge_type === 'sotka' ? totalToday >= 100 : totalToday >= 34;
+      const name = p.tg_first_name || 'участник';
 
-      if (!isDone) {
-        const name = p.tg_first_name || 'участник';
+      let text = '';
 
-        const text = totalToday > 0
-          ? `⚡ ${name}, уже ${totalToday} повторений!\n\n${dayPhrase}\n\nДобей сотку — совсем немного осталось! 💪`
-          : `⏰ ${name}!\n\n${dayPhrase} 💪`;
+      if (isDone) {
+        // Считаем статистику
+        const stats = calcStats(log, today);
+        const streak = calcStreak(log, today);
+        const rank = calcRank(participants, p.tg_user_id, today);
 
-        if (p.last_reminder_msg_id) {
-          await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/deleteMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: p.tg_user_id, message_id: p.last_reminder_msg_id })
-          });
-        }
+        text = `✅ ${name}, сотка закрыта!\n\n` +
+          `📊 Твой прогресс:\n` +
+          `• Выполнено дней: ${stats.completedDays} из 30\n` +
+          `• Серия: 🔥 ${streak} ${streakWord(streak)} подряд\n` +
+          `• Всего повторений: ${stats.totalReps}\n` +
+          `• Лучший день: ${stats.bestDay} повторений\n\n` +
+          `🏆 Твоё место в рейтинге: #${rank}\n\n` +
+          `Держи позицию — завтра снова в бой! 💪`;
 
-        const msgRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      } else if (totalToday > 0) {
+        text = `⚡ ${name}, уже ${totalToday} повторений!\n\n${dayPhrase}\n\nДобей сотку — совсем немного осталось! 💪`;
+      } else {
+        text = `⏰ ${name}!\n\n${dayPhrase} 💪`;
+      }
+
+      // Удаляем старое напоминание
+      if (p.last_reminder_msg_id) {
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/deleteMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: p.tg_user_id,
-            text,
-            reply_markup: {
-              inline_keyboard: [[
-                { text: '💪 Отметить тренировку', web_app: { url: 'https://sotka-challenge.vercel.app' } }
-              ]]
-            }
-          })
+          body: JSON.stringify({ chat_id: p.tg_user_id, message_id: p.last_reminder_msg_id })
         });
-
-        const msgData = await msgRes.json();
-
-        if (msgData.ok && msgData.result) {
-          await fetch(`${SUPABASE_URL}/rest/v1/participants?tg_user_id=eq.${p.tg_user_id}`, {
-            method: 'PATCH',
-            headers: {
-              'apikey': SUPABASE_KEY,
-              'Authorization': `Bearer ${SUPABASE_KEY}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ last_reminder_msg_id: msgData.result.message_id })
-          });
-        }
-
-        sent++;
-        await new Promise(r => setTimeout(r, 50));
       }
+
+      // Кнопка — для выполнивших другая
+      const buttonText = isDone ? '📊 Мой прогресс' : '💪 Отметить тренировку';
+
+      const msgRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: p.tg_user_id,
+          text,
+          reply_markup: {
+            inline_keyboard: [[
+              { text: buttonText, web_app: { url: 'https://sotka-challenge.vercel.app' } }
+            ]]
+          }
+        })
+      });
+
+      const msgData = await msgRes.json();
+
+      if (msgData.ok && msgData.result) {
+        await fetch(`${SUPABASE_URL}/rest/v1/participants?tg_user_id=eq.${p.tg_user_id}`, {
+          method: 'PATCH',
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ last_reminder_msg_id: msgData.result.message_id })
+        });
+      }
+
+      sent++;
+      await new Promise(r => setTimeout(r, 50));
     }
 
-    return res.status(200).json({ ok: true, date: today, day: dayIndex + 1, sent, skipped, total: participants.length });
+    return res.status(200).json({ ok: true, date: today, day: challengeDay, sent, skipped, total: participants.length });
 
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }
+}
+
+// Склонение слова "день"
+function streakWord(n) {
+  if (n % 10 === 1 && n % 100 !== 11) return 'день';
+  if ([2,3,4].includes(n % 10) && ![12,13,14].includes(n % 100)) return 'дня';
+  return 'дней';
 }
