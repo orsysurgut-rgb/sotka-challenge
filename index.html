@@ -1469,7 +1469,7 @@ function renderHome() {
   const totalReps = getTotalReps();
   const streak = getStreak();
 
-  document.getElementById('stat-total').textContent = totalReps >= 1000 ? Math.round(totalReps/1000) + 'K' : totalReps;
+  document.getElementById('stat-total').textContent = totalReps >= 1000 ? Math.round : totalReps;
   document.getElementById('stat-streak').textContent = streak;
 
   const completedDays = Object.keys(state.log).filter(d => isDayComplete(d)).length;
